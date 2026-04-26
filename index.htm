@@ -622,7 +622,10 @@
   // ═══════════════════════════════════════
   // PLACE ORDER
   // ═══════════════════════════════════════
-async function placeOrder() {
+
+  // ═══════════════════════════════════════
+  // TOKEN SLIP
+  // ═══════════════════════════════════════async function placeOrder() {
   if (!cart.length) { showToast('⚠️ Pehle items add karein'); return; }
 
   const btn = document.getElementById('place-btn');
@@ -633,11 +636,18 @@ async function placeOrder() {
   const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
 
   try {
-    const res = await fetch(BASE_URL + 'orderss/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_type: currentOrderType, table_no: tableNo })
-    });
+    for (const item of cart) {
+      await fetch(BASE_URL + 'orderss/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_type: currentOrderType,
+          table_no: tableNo,
+          item_id: item.id,
+          qty: item.qty
+        })
+      });
+    }
 
     lastToken = {
       token_no: Math.floor(Math.random() * 900) + 100,
@@ -654,25 +664,12 @@ async function placeOrder() {
     switchPage('token', 3);
 
   } catch(e) {
-    lastToken = {
-      token_no: Math.floor(Math.random() * 900) + 100,
-      items: [...cart],
-      total,
-      type: currentOrderType,
-      table: tableNo
-    };
-    showSlip();
-    cart = [];
-    renderCart();
-    switchPage('token', 3);
+    showToast('❌ Error: ' + e.message);
   } finally {
     btn.disabled = false;
     btn.textContent = '🎫 Order Place Karein';
   }
 }
-  // ═══════════════════════════════════════
-  // TOKEN SLIP
-  // ═══════════════════════════════════════
   function showSlip() {
     const t = lastToken;
     if (!t.token_no) return;
