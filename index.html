@@ -347,17 +347,18 @@
 
   async function loadDashboard() {
     try {
-      const data = await apiGet('orders/all/');
-      const items = data.items || [];
-      const pendingCount = items.filter(o => o.status === 'pending').length;
-      document.getElementById('stat-pending').textContent = pendingCount;
-      document.getElementById('pending-badge').textContent = pendingCount + ' Pending';
-      document.getElementById('stat-total').textContent = items.length;
-      document.getElementById('stat-served').textContent = items.filter(o => o.status === 'served').length;
-      let revenue = 0;
-      items.forEach(o => revenue += (o.subtotal || 0));
-      document.getElementById('stat-revenue').textContent = 'Rs. ' + revenue.toLocaleString();
-      let html = items.length === 0
+const data = await apiGet('orders/all/');
+const items = data.items || [];
+const uniqueOrders = [...new Map(items.map(i => [i.order_id, i])).values()];
+const pendingCount = uniqueOrders.filter(o => o.status === 'pending').length;
+document.getElementById('stat-pending').textContent = pendingCount;
+document.getElementById('pending-badge').textContent = pendingCount + ' Pending';
+document.getElementById('stat-total').textContent = uniqueOrders.length;
+document.getElementById('stat-served').textContent = uniqueOrders.filter(o => o.status === 'served').length;
+let revenue = 0;
+items.forEach(o => revenue += (o.subtotal || 0));
+document.getElementById('stat-revenue').textContent = 'Rs. ' + revenue.toLocaleString();
+let html = items.length === 0
         ? '<div class="empty-state"><div>📋</div><p>No orders yet</p></div>'
         : `<table class="orders-table"><thead><tr><th>Token</th><th>Type</th><th>Item</th><th>Status</th></tr></thead><tbody>${
             items.slice(0,8).map(o => `<tr>
