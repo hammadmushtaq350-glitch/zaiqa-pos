@@ -461,30 +461,54 @@
     document.getElementById('table-input-wrap').style.display = type === 'dine-in' ? 'block' : 'none';
   }
 
-  async function placeOrder() {
+async function placeOrder() {
     if (!cart.length) { showToast('⚠️ Please add items first'); return; }
+
     const btn = document.getElementById('place-btn');
     btn.disabled = true;
     btn.textContent = '⏳ Processing...';
+
     const tableNo = document.getElementById('table-no-input').value || '';
     const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
+
     try {
+      // Step 1 — Ek order banao
+      const orderRes = await fetch(BASE_URL + 'order/create/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_type: currentOrderType,
+          table_no: tableNo
+        })
+      });
+
+      // Step 2 — Har item insert karo
       for (const item of cart) {
-        await fetch(BASE_URL + 'orderss/', {
+        await fetch(BASE_URL + 'order/additem/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_type: currentOrderType, table_no: tableNo, item_id: item.id, qty: item.qty })
+          body: JSON.stringify({
+            order_id: 0,
+            item_id: item.id,
+            qty: item.qty
+          })
         });
       }
+
       lastToken = {
         token_no: Math.floor(Math.random() * 900) + 100,
-        items: [...cart], total, type: currentOrderType, table: tableNo
+        items: [...cart],
+        total,
+        type: currentOrderType,
+        table: tableNo
       };
+
       showSlip();
       cart = [];
       renderCart();
       showToast('✅ Order placed successfully!');
       switchPage('token', 3);
+
     } catch(e) {
       showToast('❌ Order failed. Please try again.');
     } finally {
@@ -492,7 +516,6 @@
       btn.textContent = '🎫 Place Order';
     }
   }
-
   function showSlip() {
     const t = lastToken;
     if (!t.token_no) return;
