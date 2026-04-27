@@ -472,7 +472,7 @@ async function placeOrder() {
     const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
 
     try {
-      // Step 1 — Ek order banao
+      // Step 1 — Order create karo
       const orderRes = await fetch(BASE_URL + 'order/create/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -482,13 +482,16 @@ async function placeOrder() {
         })
       });
 
+      const orderData = await orderRes.json();
+      const orderId = orderData.order_id;
+
       // Step 2 — Har item insert karo
       for (const item of cart) {
         await fetch(BASE_URL + 'order/additem/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            order_id: 0,
+            order_id: orderId,
             item_id: item.id,
             qty: item.qty
           })
@@ -496,7 +499,7 @@ async function placeOrder() {
       }
 
       lastToken = {
-        token_no: Math.floor(Math.random() * 900) + 100,
+        token_no: orderData.token_no || Math.floor(Math.random() * 900) + 100,
         items: [...cart],
         total,
         type: currentOrderType,
