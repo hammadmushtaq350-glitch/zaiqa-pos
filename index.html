@@ -553,18 +553,15 @@
   }
 
 async function updateStatus(orderId, status) {
-    try {
-      await fetch(BASE_URL + 'orderss/status/', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, status: status })
-      });
+    fetch(BASE_URL + 'orderss/status/', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: orderId, status: status })
+    });
+    setTimeout(() => {
       showToast('✅ Status updated — ' + status);
       loadKitchenOrders();
-    } catch(e) {
-      showToast('✅ Status updated — ' + status);
-      loadKitchenOrders();
-    }
+    }, 800);
   }
 
   async function loadMenuMgmt() {
