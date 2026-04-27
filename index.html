@@ -347,7 +347,7 @@
 
   async function loadDashboard() {
     try {
-      const data = await apiGet('orderss/pending/');
+      const data = await apiGet('orders/all/');
       const items = data.items || [];
       const pendingCount = items.filter(o => o.status === 'pending').length;
       document.getElementById('stat-pending').textContent = pendingCount;
