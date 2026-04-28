@@ -419,6 +419,20 @@ let html = items.length === 0
     }
   }
 
+async function loadMenuItems() {
+    try {
+      const data = await apiGet('menu-items/');
+      allMenuItems = data.items || [];
+      const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
+      document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) =>
+        `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`).join('');
+      renderMenuGrid(allMenuItems);
+      updateNextToken();
+    } catch(e) {
+      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
+    }
+  }
+
 async function loadMenuMgmt() {
     try {
       const data = await apiGet('menu-items/');
@@ -631,25 +645,7 @@ async function updateStatus(orderId, status) {
     }, 800);
   }
 
-  async function loadMenuMgmt() {
-    try {
-      const data = await apiGet('menu-items/');
-      const items = data.items || [];
-      document.getElementById('menu-count').textContent = items.length + ' active items';
-      document.getElementById('mgmt-grid').innerHTML = !items.length
-        ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items found</p></div>'
-        : items.map(item => `
-            <div class="mgmt-card">
-              <span class="mgmt-emoji">${item.emoji||'🍽️'}</span>
-              <div class="mgmt-name">${item.name}</div>
-              <div class="mgmt-cat">${item.category}</div>
-              <div class="mgmt-price">Rs. ${item.price}</div>
-              <div class="mgmt-actions"><button class="btn-sm btn-edit">Edit</button></div>
-            </div>`).join('');
-    } catch(e) {
-      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
-    }
-  }
+
 
   setInterval(() => {
     if (document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders();
