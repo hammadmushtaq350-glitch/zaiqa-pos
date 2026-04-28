@@ -184,75 +184,6 @@
   .btn-save { flex:1; padding:12px; background:linear-gradient(135deg,var(--gold),#a87c28); color:#000; font-weight:700; border:none; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }
   .btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text-dim); border:1px solid var(--border); border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }    
   .btn-edit:hover { border-color:var(--gold); color:var(--gold); }
- /* Toggle Switch - Add this before .toast */
-.toggle-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.toggle-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 22px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #3a3a5c;
-  transition: 0.3s;
-  border-radius: 22px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: 0.3s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: var(--green);
-}
-
-input:checked + .slider:before {
-  transform: translateX(22px);
-}
-
-input:not(:checked) + .slider {
-  background-color: #5a3a3a;
-}
-
-.menu-unavailable {
-  opacity: 0.5;
-  pointer-events: none;
-  filter: grayscale(30%);
-}
   .toast { position:fixed; bottom:30px; right:30px; background:var(--surface); border:1px solid var(--gold); border-radius:12px; padding:14px 20px; font-size:13px; color:var(--text); z-index:999; transform:translateY(100px); opacity:0; transition:all .3s; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
   .toast.show { transform:translateY(0); opacity:1; }
   .empty-state { text-align:center; padding:40px; color:var(--text-dim); }
@@ -270,11 +201,11 @@ input:not(:checked) + .slider {
 
 <nav class="sidebar">
   <div class="logo-icon">Z</div>
-  <div class="nav-item active" onclick="switchPage('dashboard',0)">📊</div>
-  <div class="nav-item" onclick="switchPage('order',1)">🧾</div>
-  <div class="nav-item" onclick="switchPage('kitchen',2)">👨‍🍳</div>
-  <div class="nav-item" onclick="switchPage('token',3)">🎫</div>
-  <div class="nav-item" onclick="switchPage('menu',4)">🍽️</div>
+  <div class="nav-item active" onclick="switchPage('dashboard',0)">??</div>
+  <div class="nav-item" onclick="switchPage('order',1)">??</div>
+  <div class="nav-item" onclick="switchPage('kitchen',2)">?????</div>
+  <div class="nav-item" onclick="switchPage('token',3)">??</div>
+  <div class="nav-item" onclick="switchPage('menu',4)">???</div>
 </nav>
 
 <header class="topbar">
@@ -288,11 +219,11 @@ input:not(:checked) + .slider {
 
 <main class="main">
   <div class="page-tabs">
-    <div class="tab active" onclick="switchPage('dashboard',0)">📊 Dashboard</div>
-    <div class="tab" onclick="switchPage('order',1)">🧾 New Order</div>
-    <div class="tab" onclick="switchPage('kitchen',2)">👨‍🍳 Kitchen</div>
-    <div class="tab" onclick="switchPage('token',3)">🎫 Token Slip</div>
-    <div class="tab" onclick="switchPage('menu',4)">🍽️ Menu</div>
+    <div class="tab active" onclick="switchPage('dashboard',0)">?? Dashboard</div>
+    <div class="tab" onclick="switchPage('order',1)">?? New Order</div>
+    <div class="tab" onclick="switchPage('kitchen',2)">????? Kitchen</div>
+    <div class="tab" onclick="switchPage('token',3)">?? Token Slip</div>
+    <div class="tab" onclick="switchPage('menu',4)">??? Menu</div>
   </div>
 <!-- ADD/EDIT MODAL -->
 <div class="modal-overlay" id="modal-overlay">
@@ -301,7 +232,7 @@ input:not(:checked) + .slider {
     <input class="modal-input" id="modal-name" placeholder="Item Name e.g. Chicken Roll">
     <input class="modal-input" id="modal-price" placeholder="Price e.g. 150" type="number">
     <input class="modal-input" id="modal-category" placeholder="Category e.g. Fast Food">
-    <input class="modal-input" id="modal-emoji" placeholder="Emoji e.g. 🍗">
+    <input class="modal-input" id="modal-emoji" placeholder="Emoji e.g. ??">
     <input type="hidden" id="modal-item-id">
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -312,10 +243,10 @@ input:not(:checked) + .slider {
   <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-label">Today's Orders</div><div class="stat-value" id="stat-total">--</div><div class="stat-sub">Live count</div></div>
-      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Today's Revenue</div><div class="stat-value" id="stat-revenue">--</div><div class="stat-sub">All orders</div></div>
-      <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-label">Pending Orders</div><div class="stat-value" id="stat-pending" style="color:var(--orange)">--</div><div class="stat-sub" style="color:var(--orange)">In kitchen</div></div>
-      <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Served Today</div><div class="stat-value" id="stat-served" style="color:var(--green)">--</div><div class="stat-sub">Completed</div></div>
+      <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">Today's Orders</div><div class="stat-value" id="stat-total">--</div><div class="stat-sub">Live count</div></div>
+      <div class="stat-card"><div class="stat-icon">??</div><div class="stat-label">Today's Revenue</div><div class="stat-value" id="stat-revenue">--</div><div class="stat-sub">All orders</div></div>
+      <div class="stat-card"><div class="stat-icon">?</div><div class="stat-label">Pending Orders</div><div class="stat-value" id="stat-pending" style="color:var(--orange)">--</div><div class="stat-sub" style="color:var(--orange)">In kitchen</div></div>
+      <div class="stat-card"><div class="stat-icon">?</div><div class="stat-label">Served Today</div><div class="stat-value" id="stat-served" style="color:var(--green)">--</div><div class="stat-sub">Completed</div></div>
     </div>
     <div class="dashboard-grid">
       <div class="card"><div class="card-title">Recent Orders <span>Live Feed</span></div><div id="dashboard-orders"><div class="loading"><div class="spinner"></div> Loading orders...</div></div></div>
@@ -329,8 +260,8 @@ input:not(:checked) + .slider {
       <div>
         <div class="section-label">Order Type</div>
         <div class="order-type-tabs">
-          <div class="otype-tab active" onclick="setOrderType('counter',this)">🪑 Counter Order</div>
-          <div class="otype-tab" onclick="setOrderType('dine-in',this)">🍽️ Dine-in / Table</div>
+          <div class="otype-tab active" onclick="setOrderType('counter',this)">?? Counter Order</div>
+          <div class="otype-tab" onclick="setOrderType('dine-in',this)">??? Dine-in / Table</div>
         </div>
         <div id="table-input-wrap" style="display:none;margin-bottom:16px;">
           <input class="cart-input" id="table-no-input" placeholder="Enter table number e.g. T4">
@@ -342,7 +273,7 @@ input:not(:checked) + .slider {
       <div>
         <div class="cart-panel">
           <div class="cart-title">Current Order</div>
-          <div class="token-badge">🎫 Next Token: <strong id="next-token">#001</strong></div>
+          <div class="token-badge">?? Next Token: <strong id="next-token">#001</strong></div>
           <div class="section-label">Items</div>
           <div class="cart-items" id="cart-items"><div style="color:var(--text-dim);font-size:13px;padding:20px 0;text-align:center">Add items from the menu</div></div>
           <div class="divider"></div>
@@ -350,7 +281,7 @@ input:not(:checked) + .slider {
             <div class="total-label">Total Amount</div>
             <div class="total-value" id="cart-total">Rs. 0</div>
           </div>
-          <button class="btn-place" id="place-btn" onclick="placeOrder()">🎫 Place Order</button>
+          <button class="btn-place" id="place-btn" onclick="placeOrder()">?? Place Order</button>
         </div>
       </div>
     </div>
@@ -363,7 +294,7 @@ input:not(:checked) + .slider {
         <div style="font-family:Playfair Display,serif;font-size:22px;color:var(--gold-light)">Kitchen Display</div>
         <div style="font-size:12px;color:var(--text-dim);margin-top:4px">Auto-refreshes every 30 seconds</div>
       </div>
-      <button onclick="loadKitchenOrders()" style="padding:8px 18px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;">🔄 Refresh</button>
+      <button onclick="loadKitchenOrders()" style="padding:8px 18px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-family:DM Sans,sans-serif;font-size:13px;">?? Refresh</button>
     </div>
     <div class="kitchen-grid" id="kitchen-grid"><div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading orders...</div></div>
   </div>
@@ -459,7 +390,7 @@ let revenue = 0;
 items.forEach(o => revenue += (o.subtotal || 0));
 document.getElementById('stat-revenue').textContent = 'Rs. ' + revenue.toLocaleString();
 let html = items.length === 0
-        ? '<div class="empty-state"><div>📋</div><p>No orders yet</p></div>'
+        ? '<div class="empty-state"><div>??</div><p>No orders yet</p></div>'
         : `<table class="orders-table"><thead><tr><th>Token</th><th>Type</th><th>Item</th><th>Status</th></tr></thead><tbody>${
             items.slice(0,8).map(o => `<tr>
               <td><strong style="color:var(--gold);font-family:monospace">#${String(o.token_no).padStart(3,'0')}</strong></td>
@@ -470,7 +401,7 @@ let html = items.length === 0
           }</tbody></table>`;
       document.getElementById('dashboard-orders').innerHTML = html;
     } catch(e) {
-      document.getElementById('dashboard-orders').innerHTML = '<div class="empty-state"><div>⚠️</div><p>Failed to load data. Check API.</p></div>';
+      document.getElementById('dashboard-orders').innerHTML = '<div class="empty-state"><div>??</div><p>Failed to load data. Check API.</p></div>';
     }
     try {
       const mdata = await apiGet('menu-items/');
@@ -478,13 +409,13 @@ let html = items.length === 0
       document.getElementById('dashboard-menu').innerHTML = mitems.length
         ? mitems.slice(0,5).map(item => `
             <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-              <span style="font-size:24px">${item.emoji||'🍽️'}</span>
+              <span style="font-size:24px">${item.emoji||'???'}</span>
               <div style="flex:1"><div style="font-size:13px;font-weight:500">${item.name}</div><div style="font-size:11px;color:var(--text-dim)">${item.category}</div></div>
               <div style="font-family:monospace;color:var(--gold);font-size:13px">Rs.${item.price}</div>
             </div>`).join('')
-        : '<div class="empty-state"><div>🍽️</div><p>Menu is empty</p></div>';
+        : '<div class="empty-state"><div>???</div><p>Menu is empty</p></div>';
     } catch(e) {
-      document.getElementById('dashboard-menu').innerHTML = '<div class="empty-state"><div>⚠️</div><p>Failed to load menu</p></div>';
+      document.getElementById('dashboard-menu').innerHTML = '<div class="empty-state"><div>??</div><p>Failed to load menu</p></div>';
     }
   }
 
@@ -498,7 +429,7 @@ async function loadMenuItems() {
       renderMenuGrid(allMenuItems);
       updateNextToken();
     } catch(e) {
-      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
+      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>??</div><p>Failed to load menu</p></div>';
     }
   }
 
@@ -508,51 +439,35 @@ async function loadMenuMgmt() {
       const items = data.items || [];
       document.getElementById('menu-count').textContent = items.length + ' active items';
       document.getElementById('mgmt-grid').innerHTML = !items.length
-        ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items found</p></div>'
+        ? '<div class="empty-state" style="grid-column:1/-1"><div>???</div><p>No items found</p></div>'
         : items.map(item => `
             <div class="mgmt-card" id="card-${item.item_id}">
-              <span class="mgmt-emoji">${item.emoji||'🍽️'}</span>
+              <span class="mgmt-emoji">${item.emoji||'???'}</span>
               <div class="mgmt-name">${item.name}</div>
               <div class="mgmt-cat">${item.category}</div>
               <div class="mgmt-price">Rs. ${item.price}</div>
-              
-              <!-- Toggle Switch -->
-              <div class="toggle-container">
-                <label class="switch">
-                  <input type="checkbox" 
-                         class="avail-toggle" 
-                         data-item-id="${item.item_id}"
-                         ${item.is_available !== false ? 'checked' : ''}
-                         onchange="toggleAvailability(${item.item_id}, this.checked)">
-                  <span class="slider"></span>
-                </label>
-                <span class="toggle-label">${item.is_available !== false ? 'Available' : 'Hidden'}</span>
-              </div>
-              
               <div class="mgmt-actions">
-                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}',${item.price || 0},'${(item.category || '').replace(/'/g, "\\'")}','${(item.emoji || '🍽️').replace(/'/g, "\\'")}')">Edit</button>
-                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}')">Delete</button>
+                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||'???'}')">Edit</button>
+                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${item.name}')">Delete</button>
               </div>
             </div>`).join('');
     } catch(e) {
-      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
+      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>??</div><p>Failed to load menu</p></div>';
     }
   }
+
   function filterMenu(cat, el) {
     setActive(el, '.cat-tab');
     renderMenuGrid(cat === 'All' ? allMenuItems : allMenuItems.filter(i => i.category === cat));
   }
 
-function renderMenuGrid(items) {
-    // Only show available items for ordering
-    const availableItems = items.filter(item => item.is_available !== false);
-    
-    document.getElementById('menu-grid').innerHTML = !availableItems.length
-      ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items available in this category</p></div>'
-      : availableItems.map(item => `
-          <div class="menu-card" onclick="addToCart(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}',${item.price || 0},'${(item.emoji || '🍽️').replace(/'/g, "\\'")}')">
+  function renderMenuGrid(items) {
+    document.getElementById('menu-grid').innerHTML = !items.length
+      ? '<div class="empty-state" style="grid-column:1/-1"><div>???</div><p>No items in this category</p></div>'
+      : items.map(item => `
+          <div class="menu-card" onclick="addToCart(${item.item_id},'${item.name}',${item.price},'${item.emoji||'???'}')">
             <div class="menu-add">+</div>
-            <span class="menu-emoji">${item.emoji||'🍽️'}</span>
+            <span class="menu-emoji">${item.emoji||'???'}</span>
             <div class="menu-name">${item.name}</div>
             <div class="menu-price">Rs. ${item.price}</div>
           </div>`).join('');
@@ -602,11 +517,11 @@ function renderMenuGrid(items) {
   }
 
 async function placeOrder() {
-    if (!cart.length) { showToast('⚠️ Please add items first'); return; }
+    if (!cart.length) { showToast('?? Please add items first'); return; }
 
     const btn = document.getElementById('place-btn');
     btn.disabled = true;
-    btn.textContent = '⏳ Processing...';
+    btn.textContent = '? Processing...';
 
     const tableNo = document.getElementById('table-no-input').value || '';
     const total = cart.reduce((sum, i) => sum + i.qty * i.price, 0);
@@ -649,14 +564,14 @@ async function placeOrder() {
       showSlip();
       cart = [];
       renderCart();
-      showToast('✅ Order placed successfully!');
+      showToast('? Order placed successfully!');
       switchPage('token', 3);
 
     } catch(e) {
-      showToast('❌ Order failed. Please try again.');
+      showToast('? Order failed. Please try again.');
     } finally {
       btn.disabled = false;
-      btn.textContent = '🎫 Place Order';
+      btn.textContent = '?? Place Order';
     }
   }
   function showSlip() {
@@ -679,11 +594,11 @@ async function placeOrder() {
       </div>
       <div class="slip-footer">
         Please remember your token number.<br>
-        Come to the counter when your number is called. 🙏<br>
+        Come to the counter when your number is called. ??<br>
         <strong style="color:var(--gold-light)">Zaiqa Restaurant</strong>
       </div>
       <br>
-      <button class="btn-print" onclick="window.print()">🖨️ Print Slip</button>`;
+      <button class="btn-print" onclick="window.print()">??? Print Slip</button>`;
   }
 
   async function loadKitchenOrders() {
@@ -692,7 +607,7 @@ async function placeOrder() {
       const data = await apiGet('orderss/pending/');
       const items = data.items || [];
       if (!items.length) {
-        document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>✅</div><p>No pending orders — all clear!</p></div>';
+        document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>?</div><p>No pending orders — all clear!</p></div>';
         return;
       }
       const grouped = {};
@@ -704,17 +619,17 @@ async function placeOrder() {
         const isReady = order.status === 'ready';
         return `<div class="kitchen-card ${isReady?'ready':''}">
           <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-          <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Counter Order'}</div>
+          <div class="k-type">${order.type==='dine-in'?'??? Dine-in — Table '+order.table:'? Counter Order'}</div>
           <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
-          <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
+          <div class="k-time">Status: <span>${isReady?'? Ready':'? Pending'}</span></div>
           ${isReady
-            ? `<button class="btn-served" onclick="updateStatus(${orderId},'served')">🚀 Mark as Served</button>`
-            : `<button class="btn-ready" onclick="updateStatus(${orderId},'ready')">✅ Mark as Ready</button>`}
+            ? `<button class="btn-served" onclick="updateStatus(${orderId},'served')">?? Mark as Served</button>`
+            : `<button class="btn-ready" onclick="updateStatus(${orderId},'ready')">? Mark as Ready</button>`}
         </div>`;
       }).join('');
       document.getElementById('pending-badge').textContent = Object.keys(grouped).length + ' Pending';
     } catch(e) {
-      document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load orders</p></div>';
+      document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>??</div><p>Failed to load orders</p></div>';
     }
   }
 
@@ -725,7 +640,7 @@ async function updateStatus(orderId, status) {
       body: JSON.stringify({ order_id: orderId, status: status })
     });
     setTimeout(() => {
-      showToast('✅ Status updated — ' + status);
+      showToast('? Status updated — ' + status);
       loadKitchenOrders();
     }, 800);
   }
@@ -738,7 +653,7 @@ async function updateStatus(orderId, status) {
 
   loadDashboard();
 
-// ── MENU CRUD ──
+// -- MENU CRUD --
 function openAddModal() {
     document.getElementById('modal-title').textContent = 'Add New Item';
     document.getElementById('modal-name').value = '';
@@ -770,7 +685,7 @@ function openAddModal() {
     const category = document.getElementById('modal-category').value.trim();
     const emoji = document.getElementById('modal-emoji').value.trim();
 
-    if (!name || !price || !category) { showToast('⚠️ Please fill all fields'); return; }
+    if (!name || !price || !category) { showToast('?? Please fill all fields'); return; }
 
     try {
       if (id) {
@@ -779,19 +694,19 @@ function openAddModal() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ item_id: parseInt(id), name, price: parseFloat(price), category, emoji })
         });
-        showToast('✅ Item updated successfully!');
+        showToast('? Item updated successfully!');
       } else {
         await fetch(BASE_URL + 'menu/add/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, price: parseFloat(price), category, emoji })
         });
-        showToast('✅ Item added successfully!');
+        showToast('? Item added successfully!');
       }
       closeModal();
       loadMenuMgmt();
     } catch(e) {
-      showToast('❌ Failed. Please try again.');
+      showToast('? Failed. Please try again.');
     }
   }
 
@@ -803,44 +718,11 @@ function openAddModal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item_id: id })
       });
-      showToast('✅ Item deleted!');
+      showToast('? Item deleted!');
       loadMenuMgmt();
     } catch(e) {
-      showToast('❌ Delete failed.');
+      showToast('? Delete failed.');
       loadMenuMgmt();
-    }
-  }
-
-  // Toggle item availability
-async function toggleAvailability(itemId, isAvailable) {
-    const card = document.getElementById('card-' + itemId);
-    const label = card ? card.querySelector('.toggle-label') : null;
-    const toggle = card ? card.querySelector('.avail-toggle') : null;
-    
-    try {
-      const response = await fetch(BASE_URL + 'toggle-availability/', {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'item_id': itemId.toString(),
-          'is_available': isAvailable ? '1' : '0'
-        }
-      });
-      
-      if (response.ok) {
-        if (label) label.textContent = isAvailable ? 'Available' : 'Hidden';
-        showToast(isAvailable ? '✅ Item now visible in orders' : '🔒 Item hidden from orders');
-        
-        if (document.getElementById('page-order').classList.contains('active')) {
-          loadMenuItems();
-        }
-      } else {
-        if (toggle) toggle.checked = !isAvailable;
-        showToast('❌ Failed - Server error');
-      }
-    } catch(e) {
-      if (toggle) toggle.checked = !isAvailable;
-      showToast('❌ Network error');
     }
   }
   
