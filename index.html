@@ -184,6 +184,75 @@
   .btn-save { flex:1; padding:12px; background:linear-gradient(135deg,var(--gold),#a87c28); color:#000; font-weight:700; border:none; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }
   .btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text-dim); border:1px solid var(--border); border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }    
   .btn-edit:hover { border-color:var(--gold); color:var(--gold); }
+ /* Toggle Switch - Add this before .toast */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.toggle-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3a3a5c;
+  transition: 0.3s;
+  border-radius: 22px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--green);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+input:not(:checked) + .slider {
+  background-color: #5a3a3a;
+}
+
+.menu-unavailable {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(30%);
+}
   .toast { position:fixed; bottom:30px; right:30px; background:var(--surface); border:1px solid var(--gold); border-radius:12px; padding:14px 20px; font-size:13px; color:var(--text); z-index:999; transform:translateY(100px); opacity:0; transition:all .3s; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
   .toast.show { transform:translateY(0); opacity:1; }
   .empty-state { text-align:center; padding:40px; color:var(--text-dim); }
@@ -446,26 +515,42 @@ async function loadMenuMgmt() {
               <div class="mgmt-name">${item.name}</div>
               <div class="mgmt-cat">${item.category}</div>
               <div class="mgmt-price">Rs. ${item.price}</div>
+              
+              <!-- Toggle Switch -->
+              <div class="toggle-container">
+                <label class="switch">
+                  <input type="checkbox" 
+                         class="avail-toggle" 
+                         data-item-id="${item.item_id}"
+                         ${item.is_available !== false ? 'checked' : ''}
+                         onchange="toggleAvailability(${item.item_id}, this.checked)">
+                  <span class="slider"></span>
+                </label>
+                <span class="toggle-label">${item.is_available !== false ? 'Available' : 'Hidden'}</span>
+              </div>
+              
               <div class="mgmt-actions">
-                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||'🍽️'}')">Edit</button>
-                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${item.name}')">Delete</button>
+                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}',${item.price || 0},'${(item.category || '').replace(/'/g, "\\'")}','${(item.emoji || '🍽️').replace(/'/g, "\\'")}')">Edit</button>
+                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}')">Delete</button>
               </div>
             </div>`).join('');
     } catch(e) {
       document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
     }
   }
-
   function filterMenu(cat, el) {
     setActive(el, '.cat-tab');
     renderMenuGrid(cat === 'All' ? allMenuItems : allMenuItems.filter(i => i.category === cat));
   }
 
-  function renderMenuGrid(items) {
-    document.getElementById('menu-grid').innerHTML = !items.length
-      ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items in this category</p></div>'
-      : items.map(item => `
-          <div class="menu-card" onclick="addToCart(${item.item_id},'${item.name}',${item.price},'${item.emoji||'🍽️'}')">
+function renderMenuGrid(items) {
+    // Only show available items for ordering
+    const availableItems = items.filter(item => item.is_available !== false);
+    
+    document.getElementById('menu-grid').innerHTML = !availableItems.length
+      ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items available in this category</p></div>'
+      : availableItems.map(item => `
+          <div class="menu-card" onclick="addToCart(${item.item_id},'${(item.name || '').replace(/'/g, "\\'")}',${item.price || 0},'${(item.emoji || '🍽️').replace(/'/g, "\\'")}')">
             <div class="menu-add">+</div>
             <span class="menu-emoji">${item.emoji||'🍽️'}</span>
             <div class="menu-name">${item.name}</div>
@@ -723,6 +808,43 @@ function openAddModal() {
     } catch(e) {
       showToast('❌ Delete failed.');
       loadMenuMgmt();
+    }
+  }
+
+  // Toggle item availability
+async function toggleAvailability(itemId, isAvailable) {
+    const card = document.getElementById('card-' + itemId);
+    const label = card ? card.querySelector('.toggle-label') : null;
+    
+    try {
+      const response = await fetch(BASE_URL + 'menu/toggle-availability/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          item_id: itemId, 
+          is_available: isAvailable 
+        })
+      });
+      
+      if (response.ok) {
+        if (label) label.textContent = isAvailable ? 'Available' : 'Hidden';
+        showToast(isAvailable ? '✅ Item now visible in orders' : '🔒 Item hidden from orders');
+        
+        // Auto-refresh new order page if open
+        if (document.getElementById('page-order').classList.contains('active')) {
+          loadMenuItems();
+        }
+      } else {
+        // Revert toggle
+        const toggle = card.querySelector('.avail-toggle');
+        if (toggle) toggle.checked = !isAvailable;
+        showToast('❌ Failed - Server error');
+      }
+    } catch(e) {
+      // Revert on network error
+      const toggle = card.querySelector('.avail-toggle');
+      if (toggle) toggle.checked = !isAvailable;
+      showToast('❌ Network error');
     }
   }
   
