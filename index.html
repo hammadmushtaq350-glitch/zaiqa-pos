@@ -171,6 +171,18 @@
   .mgmt-actions { display:flex; gap:8px; }
   .btn-sm { flex:1; padding:7px; border-radius:8px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; border:1px solid; font-family:'DM Sans',sans-serif; transition:all .2s; }
   .btn-edit { border-color:var(--border); color:var(--text-dim); background:transparent; }
+  .btn-del { border-color:rgba(232,93,117,0.3); color:var(--red); background:transparent; }
+  .btn-del:hover { background:rgba(232,93,117,0.1); }
+
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; width:440px; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--gold-light); margin-bottom:24px; }
+  .modal-input { background:var(--dark3); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:10px 14px; font-size:13px; font-family:'DM Sans',sans-serif; width:100%; margin-bottom:12px; outline:none; }
+  .modal-input:focus { border-color:var(--gold); }
+  .modal-actions { display:flex; gap:10px; margin-top:20px; }
+  .btn-save { flex:1; padding:12px; background:linear-gradient(135deg,var(--gold),#a87c28); color:#000; font-weight:700; border:none; border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .btn-cancel { flex:1; padding:12px; background:transparent; color:var(--text-dim); border:1px solid var(--border); border-radius:10px; cursor:pointer; font-family:'DM Sans',sans-serif; }    
   .btn-edit:hover { border-color:var(--gold); color:var(--gold); }
   .toast { position:fixed; bottom:30px; right:30px; background:var(--surface); border:1px solid var(--gold); border-radius:12px; padding:14px 20px; font-size:13px; color:var(--text); z-index:999; transform:translateY(100px); opacity:0; transition:all .3s; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
   .toast.show { transform:translateY(0); opacity:1; }
@@ -213,7 +225,21 @@
     <div class="tab" onclick="switchPage('token',3)">🎫 Token Slip</div>
     <div class="tab" onclick="switchPage('menu',4)">🍽️ Menu</div>
   </div>
-
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add New Item</div>
+    <input class="modal-input" id="modal-name" placeholder="Item Name e.g. Chicken Roll">
+    <input class="modal-input" id="modal-price" placeholder="Price e.g. 150" type="number">
+    <input class="modal-input" id="modal-category" placeholder="Category e.g. Fast Food">
+    <input class="modal-input" id="modal-emoji" placeholder="Emoji e.g. 🍗">
+    <input type="hidden" id="modal-item-id">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveItem()">Save Item</button>
+    </div>
+  </div>
+</div>
   <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
@@ -287,6 +313,7 @@
   <!-- MENU MANAGEMENT -->
   <div class="page" id="page-menu">
     <div class="menu-mgmt-header">
+      <button class="btn-add-item" onclick="openAddModal()">+ Add New Item</button>
       <div>
         <div style="font-family:Playfair Display,serif;font-size:22px;color:var(--gold-light)">Menu Management</div>
         <div style="font-size:12px;color:var(--text-dim);margin-top:4px" id="menu-count">Loading...</div>
@@ -392,17 +419,26 @@ let html = items.length === 0
     }
   }
 
-  async function loadMenuItems() {
+async function loadMenuMgmt() {
     try {
       const data = await apiGet('menu-items/');
-      allMenuItems = data.items || [];
-      const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-      document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) =>
-        `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`).join('');
-      renderMenuGrid(allMenuItems);
-      updateNextToken();
+      const items = data.items || [];
+      document.getElementById('menu-count').textContent = items.length + ' active items';
+      document.getElementById('mgmt-grid').innerHTML = !items.length
+        ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items found</p></div>'
+        : items.map(item => `
+            <div class="mgmt-card" id="card-${item.item_id}">
+              <span class="mgmt-emoji">${item.emoji||'🍽️'}</span>
+              <div class="mgmt-name">${item.name}</div>
+              <div class="mgmt-cat">${item.category}</div>
+              <div class="mgmt-price">Rs. ${item.price}</div>
+              <div class="mgmt-actions">
+                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||'🍽️'}')">Edit</button>
+                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${item.name}')">Delete</button>
+              </div>
+            </div>`).join('');
     } catch(e) {
-      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
+      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
     }
   }
 
@@ -620,6 +656,80 @@ async function updateStatus(orderId, status) {
   }, 30000);
 
   loadDashboard();
+
+// ── MENU CRUD ──
+function openAddModal() {
+    document.getElementById('modal-title').textContent = 'Add New Item';
+    document.getElementById('modal-name').value = '';
+    document.getElementById('modal-price').value = '';
+    document.getElementById('modal-category').value = '';
+    document.getElementById('modal-emoji').value = '';
+    document.getElementById('modal-item-id').value = '';
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+
+  function openEditModal(id, name, price, category, emoji) {
+    document.getElementById('modal-title').textContent = 'Edit Item';
+    document.getElementById('modal-name').value = name;
+    document.getElementById('modal-price').value = price;
+    document.getElementById('modal-category').value = category;
+    document.getElementById('modal-emoji').value = emoji;
+    document.getElementById('modal-item-id').value = id;
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+
+  async function saveItem() {
+    const id = document.getElementById('modal-item-id').value;
+    const name = document.getElementById('modal-name').value.trim();
+    const price = document.getElementById('modal-price').value.trim();
+    const category = document.getElementById('modal-category').value.trim();
+    const emoji = document.getElementById('modal-emoji').value.trim();
+
+    if (!name || !price || !category) { showToast('⚠️ Please fill all fields'); return; }
+
+    try {
+      if (id) {
+        await fetch(BASE_URL + 'menu/edit/', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: parseInt(id), name, price: parseFloat(price), category, emoji })
+        });
+        showToast('✅ Item updated successfully!');
+      } else {
+        await fetch(BASE_URL + 'menu/add/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, price: parseFloat(price), category, emoji })
+        });
+        showToast('✅ Item added successfully!');
+      }
+      closeModal();
+      loadMenuMgmt();
+    } catch(e) {
+      showToast('❌ Failed. Please try again.');
+    }
+  }
+
+  async function deleteItem(id, name) {
+    if (!confirm('Delete "' + name + '"? This cannot be undone.')) return;
+    try {
+      await fetch(BASE_URL + 'menu/delete/', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: id })
+      });
+      showToast('✅ Item deleted!');
+      loadMenuMgmt();
+    } catch(e) {
+      showToast('❌ Delete failed.');
+      loadMenuMgmt();
+    }
+  }
+  
 </script>
 </body>
 </html>
