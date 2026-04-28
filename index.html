@@ -815,34 +815,30 @@ function openAddModal() {
 async function toggleAvailability(itemId, isAvailable) {
     const card = document.getElementById('card-' + itemId);
     const label = card ? card.querySelector('.toggle-label') : null;
+    const toggle = card ? card.querySelector('.avail-toggle') : null;
     
     try {
-      const response = await fetch(BASE_URL + 'menu/toggle-availability/', {
+      const response = await fetch(BASE_URL + 'toggle-availability/', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          item_id: itemId, 
-          is_available: isAvailable 
-        })
+        headers: { 
+          'Content-Type': 'application/json',
+          'item_id': itemId.toString(),
+          'is_available': isAvailable ? '1' : '0'
+        }
       });
       
       if (response.ok) {
         if (label) label.textContent = isAvailable ? 'Available' : 'Hidden';
         showToast(isAvailable ? '✅ Item now visible in orders' : '🔒 Item hidden from orders');
         
-        // Auto-refresh new order page if open
         if (document.getElementById('page-order').classList.contains('active')) {
           loadMenuItems();
         }
       } else {
-        // Revert toggle
-        const toggle = card.querySelector('.avail-toggle');
         if (toggle) toggle.checked = !isAvailable;
         showToast('❌ Failed - Server error');
       }
     } catch(e) {
-      // Revert on network error
-      const toggle = card.querySelector('.avail-toggle');
       if (toggle) toggle.checked = !isAvailable;
       showToast('❌ Network error');
     }
