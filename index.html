@@ -10,6 +10,10 @@
     * {
   font-family: 'DM Sans', 'Noto Color Emoji', sans-serif;
 }
+.modal-select { background:var(--dark3); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:10px 14px; font-size:13px; width:100%; margin-bottom:12px; outline:none; appearance:none; cursor:pointer; }
+.modal-select:focus { border-color:var(--gold); }
+
+    
   :root {
     --gold: #c9a84c;
     --gold-light: #e8c97a;
@@ -172,6 +176,17 @@
   .btn-sm { flex:1; padding:7px; border-radius:8px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; cursor:pointer; border:1px solid; font-family:'DM Sans',sans-serif; transition:all .2s; }
   .btn-edit { border-color:var(--border); color:var(--text-dim); background:transparent; }
   .btn-del { border-color:rgba(232,93,117,0.3); color:var(--red); background:transparent; }
+.toggle-wrap { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.toggle-label { font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.8px; }
+.toggle { width:40px; height:22px; border-radius:11px; cursor:pointer; transition:all .3s; position:relative; flex-shrink:0; }
+.toggle.on { background:var(--green); }
+.toggle.off { background:var(--dark4); }
+.toggle-dot { position:absolute; top:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:all .3s; }
+.toggle.on .toggle-dot { left:21px; }
+.toggle.off .toggle-dot { left:3px; }
+
+.btn-add-item { padding:12px 24px; background:linear-gradient(135deg,var(--gold),#a87c28); color:#000; font-weight:700; border:none; border-radius:12px; cursor:pointer; font-size:13px; letter-spacing:.5px; box-shadow:0 4px 16px rgba(201,168,76,0.35); transition:all .2s; display:flex; align-items:center; gap:8px; }
+.btn-add-item:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,168,76,0.45); }
   .btn-del:hover { background:rgba(232,93,117,0.1); }
 
   .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center; }
@@ -229,7 +244,18 @@
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-title" id="modal-title">Add New Item</div>
-    <input class="modal-input" id="modal-name" placeholder="Item Name e.g. Chicken Roll">
+    <select class="modal-select" id="modal-category">
+  <option value="">Select Category</option>
+  <option value="BBQ">BBQ</option>
+  <option value="Rice">Rice</option>
+  <option value="Bread">Bread</option>
+  <option value="Fast Food">Fast Food</option>
+  <option value="Main Course">Main Course</option>
+  <option value="Drinks">Drinks</option>
+  <option value="Sides">Sides</option>
+  <option value="Chinese">Chinese</option>
+  <option value="Desserts">Desserts</option>
+</select>
     <input class="modal-input" id="modal-price" placeholder="Price e.g. 150" type="number">
     <input class="modal-input" id="modal-category" placeholder="Category e.g. Fast Food">
     <input class="modal-input" id="modal-emoji" placeholder="Emoji e.g. ??">
@@ -439,20 +465,25 @@ async function loadMenuMgmt() {
       const items = data.items || [];
       document.getElementById('menu-count').textContent = items.length + ' active items';
       document.getElementById('mgmt-grid').innerHTML = !items.length
-        ? '<div class="empty-state" style="grid-column:1/-1"><div>???</div><p>No items found</p></div>'
+        ? '<div class="empty-state" style="grid-column:1/-1"><div>🍽️</div><p>No items found</p></div>'
         : items.map(item => `
             <div class="mgmt-card" id="card-${item.item_id}">
-              <span class="mgmt-emoji">${item.emoji||'???'}</span>
+              <span class="mgmt-emoji">${item.emoji||'🍽️'}</span>
               <div class="mgmt-name">${item.name}</div>
               <div class="mgmt-cat">${item.category}</div>
               <div class="mgmt-price">Rs. ${item.price}</div>
+              <div class="toggle-wrap">
+                <span class="toggle-label">${item.is_active == 1 ? 'Available' : 'Unavailable'}</span>
+                <div class="toggle ${item.is_active == 1 ? 'on' : 'off'}" onclick="toggleItem(${item.item_id}, this)">
+                  <div class="toggle-dot"></div>
+                </div>
+              </div>
               <div class="mgmt-actions">
-                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||'???'}')">Edit</button>
-                <button class="btn-sm btn-del" onclick="deleteItem(${item.item_id},'${item.name}')">Delete</button>
+                <button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||'🍽️'}')">Edit</button>
               </div>
             </div>`).join('');
     } catch(e) {
-      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>??</div><p>Failed to load menu</p></div>';
+      document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load menu</p></div>';
     }
   }
 
@@ -723,6 +754,24 @@ function openAddModal() {
     } catch(e) {
       showToast('? Delete failed.');
       loadMenuMgmt();
+    }
+  }
+
+  async function toggleItem(id, el) {
+    try {
+      await fetch(BASE_URL + 'menu/toggle/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item_id: id })
+      });
+      el.classList.toggle('on');
+      el.classList.toggle('off');
+      const label = el.previousElementSibling;
+      label.textContent = el.classList.contains('on') ? 'Available' : 'Unavailable';
+      showToast('✅ Item status updated!');
+      loadMenuItems();
+    } catch(e) {
+      showToast('❌ Update failed.');
     }
   }
   
