@@ -537,13 +537,15 @@ async function checkPasswordVersion() {
   updateClock();
 
   function showToast(msg) {
-    const t = document.getElementById('toast');
+    const t = document.getEle  mentById('toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
   function switchPage(name, idx) {
+      const isValid = await checkPasswordVersion();
+    if (!isValid) return;
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -568,6 +570,8 @@ async function checkPasswordVersion() {
 
   // DASHBOARD
   async function loadDashboard() {
+       const isValid = await checkPasswordVersion();
+    if (!isValid) return;
     try {
       const data = await apiGet('orders/all/');
       const items = data.items || [];
@@ -575,7 +579,7 @@ async function checkPasswordVersion() {
       const pendingCount = uniqueOrders.filter(o => o.status === 'pending').length;
       document.getElementById('stat-pending').textContent = pendingCount;
       document.getElementById('pending-badge').textContent = pendingCount + ' Pending';
-      document.getElementById('stat-total').textContent = uniqueOrders.length;
+      document.getElement    ById('stat-total').textContent = uniqueOrders.length;
       document.getElementById('stat-served').textContent = uniqueOrders.filter(o => o.status === 'served').length;
       let revenue = 0;
       items.forEach(o => revenue += (o.subtotal || 0));
@@ -615,6 +619,8 @@ async function checkPasswordVersion() {
 
   // MENU ITEMS (New Order)
   async function loadMenuItems() {
+      const isValid = await checkPasswordVersion();
+    if (!isValid) return;
     try {
       const data = await apiGet('menu-items/');
       allMenuItems = data.items || [];
@@ -691,6 +697,8 @@ async function checkPasswordVersion() {
 
   // PLACE ORDER
   async function placeOrder() {
+    const isValid = await checkPasswordVersion();
+    if (!isValid) return;
     if (!cart.length) { showToast('Please add items first'); return; }
     const btn = document.getElementById('place-btn');
     btn.disabled = true;
@@ -756,6 +764,8 @@ async function checkPasswordVersion() {
 
   // KITCHEN
   async function loadKitchenOrders() {
+     const isValid = await checkPasswordVersion();
+    if (!isValid) return;
     document.getElementById('kitchen-grid').innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading orders...</div>';
     try {
       const data = await apiGet('orderss/pending/');
@@ -904,6 +914,9 @@ async function checkPasswordVersion() {
   }
 
   async function saveItem() {
+       const isValid = await checkPasswordVersion();
+    if (!isValid) return;
+    
     const id = document.getElementById('modal-item-id').value;
     const name = document.getElementById('modal-name').value.trim();
     const price = document.getElementById('modal-price').value.trim();
