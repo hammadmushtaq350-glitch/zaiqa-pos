@@ -389,6 +389,30 @@
 </div> <!-- end appWrapper -->
 
 <script>
+async function checkPasswordVersion() {
+    const userId = localStorage.getItem('userId');
+    const storedVersion = localStorage.getItem('passwordVersion');
+    if (!userId || !storedVersion) return true;
+    
+    try {
+        const res = await fetch('https://oracleapex.com/ords/wksp-musoft/restaurant/checkVersion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId })
+        });
+        const data = await res.json();
+        if (data.version && data.version != storedVersion) {
+            // version mismatch – force logout
+            logout();
+            showToast('Your password has been changed elsewhere. Please login again.');
+            return false;
+        }
+        return true;
+    } catch(e) {
+        console.error('Version check failed', e);
+        return true;
+    }
+} 
   // ==================== LOGIN SYSTEM (REAL APEX USERS) ====================
   async function doLogin() {
     const username = document.getElementById('loginUser').value.trim();
