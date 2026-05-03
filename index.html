@@ -517,20 +517,28 @@
     }
   }
 
-  async function loadMenuItems() {
+async function loadMenuItems() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
     try {
-      const data = await apiGet('menu-items/');
-      allMenuItems = data.items || [];
-      const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-      document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`).join('');
-      renderMenuGrid(allMenuItems);
-      updateNextToken();
+        const restaurantId = localStorage.getItem('restaurantId');
+        const url = BASE_URL + 'menu-items/?restaurant_id=' + restaurantId;
+        const response = await fetch(url);
+        const data = await response.json();
+        allMenuItems = data.items || [];
+        
+        const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
+        document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
+            `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
+        ).join('');
+        
+        renderMenuGrid(allMenuItems);
+        updateNextToken();
     } catch(e) {
-      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
+        console.error('loadMenuItems error:', e);
+        document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
     }
-  }
+}
 
   function filterMenu(cat, el) {
     setActive(el, '.cat-tab');
