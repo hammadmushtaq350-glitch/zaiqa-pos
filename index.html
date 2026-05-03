@@ -410,7 +410,7 @@
     if (e.key === 'Enter') doLogin();
   });
 
-  // ==================== ORIGINAL APP CODE ====================
+  // ==================== ORIGINAL APP CODE WITH RESTAURANT_ID IN ALL API CALLS ====================
   const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
   let allMenuItems = [];
   let cart = [];
@@ -450,8 +450,33 @@
     el.classList.add('active');
   }
 
+  // MODIFIED: apiGet now includes restaurant_id in URL
   async function apiGet(endpoint) {
-    const res = await fetch(BASE_URL + endpoint);
+    const restaurantId = localStorage.getItem('restaurantId');
+    const url = BASE_URL + endpoint + (endpoint.includes('?') ? '&' : '?') + 'restaurant_id=' + restaurantId;
+    const res = await fetch(url);
+    return await res.json();
+  }
+
+  // MODIFIED: apiPost now includes restaurant_id in body
+  async function apiPost(endpoint, data) {
+    const restaurantId = localStorage.getItem('restaurantId');
+    const res = await fetch(BASE_URL + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, restaurant_id: restaurantId })
+    });
+    return await res.json();
+  }
+
+  // MODIFIED: apiPut now includes restaurant_id in body
+  async function apiPut(endpoint, data) {
+    const restaurantId = localStorage.getItem('restaurantId');
+    const res = await fetch(BASE_URL + endpoint, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, restaurant_id: restaurantId })
+    });
     return await res.json();
   }
 
@@ -562,6 +587,7 @@
     document.getElementById('table-input-wrap').style.display = type === 'dine-in' ? 'block' : 'none';
   }
 
+  // MODIFIED: placeOrder uses apiPost (which includes restaurant_id)
   async function placeOrder() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
@@ -571,17 +597,10 @@
     btn.textContent = 'Processing...';
     const tableNo = document.getElementById('table-no-input').value || '';
     try {
-      const orderRes = await fetch(BASE_URL + 'order/create/', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_type: currentOrderType, table_no: tableNo })
-      });
-      const orderData = await orderRes.json();
+      const orderData = await apiPost('order/create/', { order_type: currentOrderType, table_no: tableNo });
       const orderId = orderData.order_id;
       for (const item of cart) {
-        await fetch(BASE_URL + 'order/additem/', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ order_id: orderId, item_id: item.id, qty: item.qty })
-        });
+        await apiPost('order/additem/', { order_id: orderId, item_id: item.id, qty: item.qty });
       }
       lastToken = { token_no: orderData.token_no || Math.floor(Math.random()*900)+100, items: [...cart], total: cart.reduce((s,i)=>s+i.qty*i.price,0), type: currentOrderType, table: tableNo };
       showSlip();
@@ -641,10 +660,7 @@
   }
 
   async function updateStatus(orderId, status) {
-    await fetch(BASE_URL + 'orderss/status/', {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ order_id: orderId, status })
-    });
+    await apiPut('orderss/status/', { order_id: orderId, status: status });
     showToast('Status updated — ' + status);
     loadKitchenOrders();
   }
@@ -672,10 +688,7 @@
 
   async function toggleItem(id) {
     try {
-      await fetch(BASE_URL + 'menu/toggle/', {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ item_id: id })
-      });
+      await apiPut('menu/toggle/', { item_id: id });
       const tog = document.getElementById('tog-'+id);
       const lbl = document.getElementById('lbl-'+id);
       const card = document.getElementById('card-'+id);
@@ -692,6 +705,7 @@
   function openAddModal() { document.getElementById('modal-title').innerText='Add New Item'; document.getElementById('modal-name').value=''; document.getElementById('modal-price').value=''; document.getElementById('modal-category').value=''; document.getElementById('modal-emoji').value=''; document.getElementById('modal-item-id').value=''; document.getElementById('modal-overlay').classList.add('show'); }
   function openEditModal(id,name,price,category,emoji) { document.getElementById('modal-title').innerText='Edit Item'; document.getElementById('modal-name').value=name; document.getElementById('modal-price').value=price; document.getElementById('modal-category').value=category; document.getElementById('modal-emoji').value=emoji; document.getElementById('modal-item-id').value=id; document.getElementById('modal-overlay').classList.add('show'); }
   function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+  
   async function saveItem() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
@@ -703,10 +717,10 @@
     if (!name || !price || !category) { showToast('Please fill all fields'); return; }
     try {
       if (id) {
-        await fetch(BASE_URL + 'menu/edit/', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ item_id: parseInt(id), name, price: parseFloat(price), category, emoji }) });
+        await apiPut('menu/edit/', { item_id: parseInt(id), name, price: parseFloat(price), category, emoji });
         showToast('Item updated successfully!');
       } else {
-        await fetch(BASE_URL + 'menu/add/', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, price: parseFloat(price), category, emoji }) });
+        await apiPost('menu/add/', { name, price: parseFloat(price), category, emoji });
         showToast('Item added successfully!');
       }
       closeModal();
