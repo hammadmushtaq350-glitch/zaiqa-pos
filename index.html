@@ -410,7 +410,7 @@
     if (e.key === 'Enter') doLogin();
   });
 
-  // ==================== ORIGINAL APP CODE WITH RESTAURANT_ID IN ALL API CALLS ====================
+  // ==================== ORIGINAL APP CODE ====================
   const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
   let allMenuItems = [];
   let cart = [];
@@ -450,7 +450,6 @@
     el.classList.add('active');
   }
 
-  // MODIFIED: apiGet now includes restaurant_id in URL
   async function apiGet(endpoint) {
     const restaurantId = localStorage.getItem('restaurantId');
     const url = BASE_URL + endpoint + (endpoint.includes('?') ? '&' : '?') + 'restaurant_id=' + restaurantId;
@@ -458,7 +457,6 @@
     return await res.json();
   }
 
-  // MODIFIED: apiPost now includes restaurant_id in body
   async function apiPost(endpoint, data) {
     const restaurantId = localStorage.getItem('restaurantId');
     const res = await fetch(BASE_URL + endpoint, {
@@ -466,10 +464,16 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...data, restaurant_id: restaurantId })
     });
-    return await res.json();
+    // Agar response non-JSON ho to bhi handle karo
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch(e) {
+      console.error('Invalid JSON response:', text);
+      throw new Error('Server returned invalid response');
+    }
   }
 
-  // MODIFIED: apiPut now includes restaurant_id in body
   async function apiPut(endpoint, data) {
     const restaurantId = localStorage.getItem('restaurantId');
     const res = await fetch(BASE_URL + endpoint, {
@@ -517,28 +521,26 @@
     }
   }
 
-async function loadMenuItems() {
+  async function loadMenuItems() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
     try {
-        const restaurantId = localStorage.getItem('restaurantId');
-        const url = BASE_URL + 'menu-items/?restaurant_id=' + restaurantId;
-        const response = await fetch(url);
-        const data = await response.json();
-        allMenuItems = data.items || [];
-        
-        const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-        document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
-            `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
-        ).join('');
-        
-        renderMenuGrid(allMenuItems);
-        updateNextToken();
+      const restaurantId = localStorage.getItem('restaurantId');
+      const url = BASE_URL + 'menu-items/?restaurant_id=' + restaurantId;
+      const response = await fetch(url);
+      const data = await response.json();
+      allMenuItems = data.items || [];
+      const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
+      document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
+        `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
+      ).join('');
+      renderMenuGrid(allMenuItems);
+      updateNextToken();
     } catch(e) {
-        console.error('loadMenuItems error:', e);
-        document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
+      console.error('loadMenuItems error:', e);
+      document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
     }
-}
+  }
 
   function filterMenu(cat, el) {
     setActive(el, '.cat-tab');
@@ -595,8 +597,8 @@ async function loadMenuItems() {
     document.getElementById('table-input-wrap').style.display = type === 'dine-in' ? 'block' : 'none';
   }
 
-  // MODIFIED: placeOrder uses apiPost (which includes restaurant_id)
- async function placeOrder() {
+  // ==================== FIXED PLACE ORDER ====================
+  async function placeOrder() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
     if (!cart.length) { showToast('Please add items first'); return; }
@@ -605,48 +607,46 @@ async function loadMenuItems() {
     btn.textContent = 'Processing...';
     const tableNo = document.getElementById('table-no-input').value || '';
     try {
-        const orderData = await apiPost('order/create/', { 
-            order_type: currentOrderType, 
-            table_no: tableNo 
+      const orderData = await apiPost('order/create/', { 
+        order_type: currentOrderType, 
+        table_no: tableNo 
+      });
+      console.log('Order response:', orderData);
+      if (!orderData || !orderData.order_id) {
+        throw new Error('Invalid response from server');
+      }
+      const orderId = orderData.order_id;
+      const tokenNo = orderData.token_no || Math.floor(Math.random() * 900) + 100;
+      
+      for (const item of cart) {
+        await apiPost('order/additem/', { 
+          order_id: orderId, 
+          item_id: item.id, 
+          qty: item.qty 
         });
-        console.log('Order response:', orderData);
-        
-        if (!orderData || !orderData.order_id) {
-            throw new Error('Invalid response from server');
-        }
-        const orderId = orderData.order_id;
-        const tokenNo = orderData.token_no || Math.floor(Math.random() * 900) + 100;
-        
-        // Add each item
-        for (const item of cart) {
-            await apiPost('order/additem/', { 
-                order_id: orderId, 
-                item_id: item.id, 
-                qty: item.qty 
-            });
-        }
-        
-        // Prepare token slip data
-        lastToken = {
-            token_no: tokenNo,
-            items: [...cart],
-            total: cart.reduce((s, i) => s + i.qty * i.price, 0),
-            type: currentOrderType,
-            table: tableNo
-        };
-        showSlip();
-        cart = [];
-        renderCart();
-        showToast('Order placed successfully! Token #' + String(tokenNo).padStart(3,'0'));
-        switchPage('token', 3);
+      }
+      
+      lastToken = {
+        token_no: tokenNo,
+        items: [...cart],
+        total: cart.reduce((s, i) => s + i.qty * i.price, 0),
+        type: currentOrderType,
+        table: tableNo
+      };
+      showSlip();
+      cart = [];
+      renderCart();
+      showToast('Order placed successfully! Token #' + String(tokenNo).padStart(3,'0'));
+      switchPage('token', 3);
     } catch (err) {
-        console.error('Place order error:', err);
-        showToast('Order failed: ' + (err.message || 'Please try again.'));
+      console.error('Place order error:', err);
+      showToast('Order failed: ' + (err.message || 'Please try again.'));
     } finally {
-        btn.disabled = false;
-        btn.textContent = 'Place Order';
+      btn.disabled = false;
+      btn.textContent = 'Place Order';
     }
-}
+  }
+
   function showSlip() {
     const t = lastToken;
     if (!t.token_no) return;
@@ -662,6 +662,7 @@ async function loadMenuItems() {
       <br><button class="btn-print" onclick="window.print()">Print Slip</button>`;
   }
 
+  // ==================== FIXED KITCHEN UPDATE ====================
   async function loadKitchenOrders() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
@@ -697,7 +698,7 @@ async function loadMenuItems() {
   async function updateStatus(orderId, status) {
     await apiPut('orderss/status/', { order_id: orderId, status: status });
     showToast('Status updated — ' + status);
-    loadKitchenOrders();
+    await loadKitchenOrders();   // Await to ensure refresh completes
   }
 
   async function loadMenuMgmt() {
