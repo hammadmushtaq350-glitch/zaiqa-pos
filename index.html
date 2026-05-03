@@ -596,7 +596,7 @@ async function loadMenuItems() {
   }
 
   // MODIFIED: placeOrder uses apiPost (which includes restaurant_id)
-  async function placeOrder() {
+ async function placeOrder() {
     const isValid = await checkPasswordVersion();
     if (!isValid) return;
     if (!cart.length) { showToast('Please add items first'); return; }
@@ -605,21 +605,48 @@ async function loadMenuItems() {
     btn.textContent = 'Processing...';
     const tableNo = document.getElementById('table-no-input').value || '';
     try {
-      const orderData = await apiPost('order/create/', { order_type: currentOrderType, table_no: tableNo });
-      const orderId = orderData.order_id;
-      for (const item of cart) {
-        await apiPost('order/additem/', { order_id: orderId, item_id: item.id, qty: item.qty });
-      }
-      lastToken = { token_no: orderData.token_no || Math.floor(Math.random()*900)+100, items: [...cart], total: cart.reduce((s,i)=>s+i.qty*i.price,0), type: currentOrderType, table: tableNo };
-      showSlip();
-      cart = [];
-      renderCart();
-      showToast('Order placed successfully!');
-      switchPage('token', 3);
-    } catch(e) { showToast('Order failed. Please try again.'); }
-    finally { btn.disabled = false; btn.textContent = 'Place Order'; }
-  }
-
+        const orderData = await apiPost('order/create/', { 
+            order_type: currentOrderType, 
+            table_no: tableNo 
+        });
+        console.log('Order response:', orderData);
+        
+        if (!orderData || !orderData.order_id) {
+            throw new Error('Invalid response from server');
+        }
+        const orderId = orderData.order_id;
+        const tokenNo = orderData.token_no || Math.floor(Math.random() * 900) + 100;
+        
+        // Add each item
+        for (const item of cart) {
+            await apiPost('order/additem/', { 
+                order_id: orderId, 
+                item_id: item.id, 
+                qty: item.qty 
+            });
+        }
+        
+        // Prepare token slip data
+        lastToken = {
+            token_no: tokenNo,
+            items: [...cart],
+            total: cart.reduce((s, i) => s + i.qty * i.price, 0),
+            type: currentOrderType,
+            table: tableNo
+        };
+        showSlip();
+        cart = [];
+        renderCart();
+        showToast('Order placed successfully! Token #' + String(tokenNo).padStart(3,'0'));
+        switchPage('token', 3);
+    } catch (err) {
+        console.error('Place order error:', err);
+        showToast('Order failed: ' + (err.message || 'Please try again.'));
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+    }
+}
   function showSlip() {
     const t = lastToken;
     if (!t.token_no) return;
