@@ -6,6 +6,7 @@
     <title>ZAIQA POS — Live System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        /* All CSS same as before – I'm reusing a compact but complete version of your original CSS */
         :root {
             --gold:#c9a84c; --gold-light:#e8c97a; --gold-dim:rgba(201,168,76,0.15);
             --dark:#0d0d14; --dark2:#13131f; --dark3:#1a1a2e; --dark4:#22223b;
@@ -63,7 +64,7 @@
         .tab.active { color:var(--gold); background:var(--surface); border-color:var(--border); border-bottom:1px solid var(--surface); position:relative; top:1px; }
         .page { display:none; padding:28px 32px 40px; }
         .page.active { display:block; }
-        /* Additional UI styles (cards, grid, etc - shortened for brevity, but functional) */
+        /* Stats & Cards */
         .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
         .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; position:relative; overflow:hidden; transition:transform .2s; }
         .stat-card:hover { transform:translateY(-2px); }
@@ -78,29 +79,52 @@
         .status-pill.pending { background:rgba(245,166,35,0.15); color:var(--orange); }
         .status-pill.ready { background:rgba(78,202,139,0.15); color:var(--green); }
         .status-pill.served { background:rgba(143,143,163,0.15); color:var(--text-dim); }
+        /* Order Page */
+        .order-layout { display:grid; grid-template-columns:1fr 380px; gap:20px; }
+        .order-type-tabs { display:flex; gap:8px; margin-bottom:20px; }
+        .otype-tab { flex:1; padding:12px; border-radius:12px; text-align:center; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); color:var(--text-dim); }
+        .otype-tab.active { background:var(--gold-dim); border-color:var(--gold); color:var(--gold); }
+        .cat-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+        .cat-tab { padding:7px 16px; border-radius:20px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); color:var(--text-dim); }
+        .cat-tab.active { background:var(--gold); color:#000; }
         .menu-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-        .menu-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; cursor:pointer; transition:all .2s; position:relative; }
+        .menu-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; cursor:pointer; transition:all .2s; }
         .menu-card:hover { border-color:var(--gold); transform:translateY(-2px); }
-        .menu-emoji { font-size:32px; margin-bottom:10px; display:block; }
-        .menu-name { font-size:13px; font-weight:600; }
-        .menu-price { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gold); }
         .cart-panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; position:sticky; top:92px; }
+        .cart-title { font-family:'Playfair Display',serif; font-size:18px; color:var(--gold-light); }
+        .token-badge { display:inline-flex; gap:6px; background:var(--gold-dim); border:1px solid var(--border); padding:4px 12px; border-radius:20px; font-size:12px; color:var(--gold); margin-bottom:16px; }
+        .cart-items { min-height:120px; margin-bottom:16px; }
+        .cart-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .total-row { display:flex; justify-content:space-between; margin-top:12px; }
         .btn-place { width:100%; padding:14px; background:linear-gradient(135deg,var(--gold),#a87c28); color:#000; font-weight:700; border:none; border-radius:12px; cursor:pointer; }
-        .toast { position:fixed; bottom:30px; right:30px; background:var(--surface); border:1px solid var(--gold); border-radius:12px; padding:14px 20px; font-size:13px; z-index:999; transform:translateY(100px); opacity:0; transition:all .3s; }
-        .toast.show { transform:translateY(0); opacity:1; }
+        /* Kitchen */
         .kitchen-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-        .kitchen-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; }
+        .kitchen-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; position:relative; overflow:hidden; }
+        .kitchen-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--orange); }
+        .kitchen-card.ready::before { background:var(--green); }
         .k-token { font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700; color:var(--gold-light); }
         .btn-ready, .btn-served { width:100%; padding:10px; border-radius:10px; font-weight:600; cursor:pointer; margin-top:12px; }
         .btn-ready { background:var(--gold-dim); color:var(--gold); }
         .btn-served { background:rgba(78,202,139,0.15); color:var(--green); }
+        /* Token Slip */
         .token-container { max-width:480px; margin:0 auto; }
         .slip { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:36px; text-align:center; }
         .slip-token-num { font-family:'Playfair Display',serif; font-size:72px; font-weight:700; color:var(--gold); }
+        /* Menu Mgmt */
+        .menu-mgmt-header { display:flex; justify-content:space-between; margin-bottom:22px; }
+        .btn-add-item { padding:12px 24px; background:var(--gold); color:#000; border:none; border-radius:12px; cursor:pointer; }
+        .mgmt-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+        .mgmt-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; }
+        /* Modal */
         .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:none; align-items:center; justify-content:center; }
         .modal-overlay.show { display:flex; }
         .modal { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; width:440px; }
-        .mgmt-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+        .modal-input, .modal-select { width:100%; padding:10px; margin-bottom:12px; background:var(--dark3); border:1px solid var(--border); color:white; border-radius:8px; }
+        .btn-save, .btn-cancel { padding:10px; border-radius:8px; cursor:pointer; margin-top:10px; }
+        .btn-save { background:var(--gold); color:#000; border:none; }
+        .btn-cancel { background:transparent; border:1px solid var(--border); color:var(--text-dim); }
+        .toast { position:fixed; bottom:30px; right:30px; background:var(--surface); border:1px solid var(--gold); border-radius:12px; padding:14px 20px; z-index:999; transform:translateY(100px); opacity:0; transition:all .3s; }
+        .toast.show { transform:translateY(0); opacity:1; }
         .loading { text-align:center; padding:40px; }
         .spinner { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; display:inline-block; }
         @keyframes spin { to { transform:rotate(360deg); } }
@@ -157,7 +181,7 @@
 <main class="main">
   <div class="page-tabs"><div class="tab active" onclick="switchPage('dashboard',0)">Dashboard</div><div class="tab" onclick="switchPage('order',1)">New Order</div><div class="tab" onclick="switchPage('kitchen',2)">Kitchen</div><div class="tab" onclick="switchPage('token',3)">Token Slip</div><div class="tab" onclick="switchPage('menu',4)">Menu</div></div>
 
-  <!-- Dashboard Page -->
+  <!-- Dashboard -->
   <div class="page active" id="page-dashboard">
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-label">Today's Orders</div><div class="stat-value" id="stat-total">--</div></div>
@@ -173,31 +197,31 @@
 
   <!-- Order Page -->
   <div class="page" id="page-order">
-    <div class="order-layout" style="display:grid; grid-template-columns:1fr 380px; gap:20px">
+    <div class="order-layout">
       <div>
         <div class="section-label">Order Type</div>
-        <div class="order-type-tabs" style="display:flex; gap:8px"><div class="otype-tab active" onclick="setOrderType('counter',this)">Counter</div><div class="otype-tab" onclick="setOrderType('dine-in',this)">Dine-in</div></div>
+        <div class="order-type-tabs"><div class="otype-tab active" onclick="setOrderType('counter',this)">Counter</div><div class="otype-tab" onclick="setOrderType('dine-in',this)">Dine-in</div></div>
         <div id="table-input-wrap" style="display:none; margin-bottom:16px"><input class="cart-input" id="table-no-input" placeholder="Table number"></div>
         <div class="section-label">Category</div><div class="cat-tabs" id="cat-tabs"></div>
         <div class="menu-grid" id="menu-grid"><div class="loading"><div class="spinner"></div> Loading menu...</div></div>
       </div>
-      <div><div class="cart-panel"><div class="cart-title">Current Order</div><div class="token-badge">Next Token: <strong id="next-token">#001</strong></div><div class="cart-items" id="cart-items"></div><div class="total-row"><div class="total-label">Total</div><div class="total-value" id="cart-total">Rs.0</div></div><button class="btn-place" id="place-btn" onclick="placeOrder()">Place Order</button></div></div>
+      <div><div class="cart-panel"><div class="cart-title">Current Order</div><div class="token-badge">Next Token: <strong id="next-token">#001</strong></div><div class="cart-items" id="cart-items">Add items from the menu</div><div class="total-row"><div class="total-label">Total</div><div class="total-value" id="cart-total">Rs.0</div></div><button class="btn-place" id="place-btn" onclick="placeOrder()">Place Order</button></div></div>
     </div>
   </div>
 
-  <!-- Kitchen Page -->
+  <!-- Kitchen -->
   <div class="page" id="page-kitchen"><div style="display:flex; justify-content:space-between"><h3>Kitchen Display</h3><button onclick="loadKitchenOrders()">Refresh</button></div><div class="kitchen-grid" id="kitchen-grid"><div class="loading"><div class="spinner"></div> Loading...</div></div></div>
 
   <!-- Token Slip -->
-  <div class="page" id="page-token"><div class="token-container"><div class="slip" id="slip-content"><div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-sub">Place an order</div></div></div></div>
+  <div class="page" id="page-token"><div class="token-container"><div class="slip" id="slip-content"><div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-sub">Place an order to see slip</div></div></div></div>
 
   <!-- Menu Management -->
-  <div class="page" id="page-menu"><div class="menu-mgmt-header" style="display:flex; justify-content:space-between"><h3>Menu Management</h3><button class="btn-add-item" onclick="openAddModal()">+ Add Item</button></div><div class="mgmt-grid" id="mgmt-grid"><div class="loading"><div class="spinner"></div> Loading...</div></div></div>
+  <div class="page" id="page-menu"><div class="menu-mgmt-header"><h3>Menu Management</h3><button class="btn-add-item" onclick="openAddModal()">+ Add New Item</button></div><div class="mgmt-grid" id="mgmt-grid"><div class="loading"><div class="spinner"></div> Loading...</div></div></div>
 </main>
 </div>
 
 <script>
-  // Version tracking (auto-logout)
+  // ==================== VERSION TRACKING (AUTO LOGOUT) ====================
   async function checkPasswordVersion() {
     const userId = localStorage.getItem('userId');
     const storedVersion = localStorage.getItem('passwordVersion');
@@ -212,21 +236,32 @@
     } catch(e) { return true; }
   }
 
-  // Hardcoded login with version
+  // ==================== LOGIN (UPDATED PASSWORDS) ====================
   async function doLogin() {
     const username = document.getElementById('loginUser').value.trim();
     const password = document.getElementById('loginPass').value.trim();
     const errorDiv = document.getElementById('loginError');
-    if (username === 'admin' && password === '1234') {
-      localStorage.setItem('loggedIn','true'); localStorage.setItem('userRole','admin'); localStorage.setItem('userId','1'); localStorage.setItem('passwordVersion','1');
+    const loginBtn = document.getElementById('loginSubmit');
+    if (!username || !password) { errorDiv.innerText = 'Enter credentials'; return; }
+    errorDiv.innerText = '';
+    loginBtn.disabled = true;
+    loginBtn.innerText = 'Logging in...';
+
+    // Hardcoded credentials after password change
+    if (username === 'admin' && password === 'newadmin789') {
+      localStorage.setItem('loggedIn','true'); localStorage.setItem('userRole','admin');
+      localStorage.setItem('userId','1'); localStorage.setItem('passwordVersion','1');
       document.getElementById('loginPage').style.display='none'; document.getElementById('appWrapper').style.display='block';
-      showToast('Admin login'); loadDashboard();
-    } else if (username === 'kitchen' && password === '1234') {
-      localStorage.setItem('loggedIn','true'); localStorage.setItem('userRole','kitchen'); localStorage.setItem('userId','2'); localStorage.setItem('passwordVersion','1');
+      showToast('Welcome admin'); loadDashboard();
+    } else if (username === 'kitchen' && password === 'newkitchen789') {
+      localStorage.setItem('loggedIn','true'); localStorage.setItem('userRole','kitchen');
+      localStorage.setItem('userId','2'); localStorage.setItem('passwordVersion','1');
       document.getElementById('loginPage').style.display='none'; document.getElementById('appWrapper').style.display='block';
       restrictToKitchen(); switchPage('kitchen',2);
-    } else errorDiv.innerText = 'Invalid credentials';
+    } else errorDiv.innerText = 'Invalid username or password';
+    loginBtn.disabled = false; loginBtn.innerText = 'Login';
   }
+
   function restrictToKitchen() {
     document.querySelectorAll('.tab').forEach((t,i)=>{ if(i!=2 && i!=3) t.style.display='none'; });
     document.querySelectorAll('.nav-item').forEach((n,i)=>{ if(i!=2 && i!=3) n.style.display='none'; });
@@ -236,12 +271,13 @@
     if(localStorage.getItem('loggedIn')==='true'){
       document.getElementById('loginPage').style.display='none'; document.getElementById('appWrapper').style.display='block';
       if(localStorage.getItem('userRole')==='kitchen') restrictToKitchen();
-      switchPage('dashboard',0);
+      else switchPage('dashboard',0);
     }
   });
   document.getElementById('loginSubmit').addEventListener('click',doLogin);
   document.getElementById('loginPass').addEventListener('keypress',e=>{ if(e.key==='Enter') doLogin(); });
 
+  // ==================== APP CORE ====================
   const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
   let allMenuItems = [], cart = [], currentOrderType = 'counter', lastToken = {};
 
@@ -258,8 +294,8 @@
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.getElementById('page-'+name).classList.add('active');
-    document.querySelectorAll('.tab')[idx].classList.add('active');
-    document.querySelectorAll('.nav-item')[idx].classList.add('active');
+    document.querySelectorAll('.tab')[idx]?.classList.add('active');
+    document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
     if(name==='dashboard') loadDashboard();
     if(name==='order') loadMenuItems();
     if(name==='kitchen') loadKitchenOrders();
@@ -272,7 +308,8 @@
       const data = await apiGet('orders/all/');
       const items = data.items || [];
       document.getElementById('stat-total').innerText = items.length;
-      document.getElementById('stat-revenue').innerText = 'Rs.'+items.reduce((s,i)=>s+(i.subtotal||0),0);
+      let revenue=0; items.forEach(o=>revenue+=(o.subtotal||0));
+      document.getElementById('stat-revenue').innerText = 'Rs.'+revenue;
       document.getElementById('stat-pending').innerText = items.filter(i=>i.status==='pending').length;
       document.getElementById('stat-served').innerText = items.filter(i=>i.status==='served').length;
       document.getElementById('pending-badge').innerText = items.filter(i=>i.status==='pending').length;
@@ -282,7 +319,7 @@
       document.getElementById('dashboard-orders').innerHTML = html;
       const mitems = (await apiGet('menu-items/')).items || [];
       document.getElementById('dashboard-menu').innerHTML = mitems.slice(0,5).map(i=>`<div>${i.emoji} ${i.name} - Rs.${i.price}</div>`).join('');
-    } catch(e){ document.getElementById('dashboard-orders').innerHTML='<div class="empty-state">Failed</div>'; }
+    } catch(e){ document.getElementById('dashboard-orders').innerHTML='<div class="empty-state">Failed to load</div>'; }
   }
 
   async function loadMenuItems(){
@@ -322,17 +359,17 @@
     const btn=document.getElementById('place-btn'); btn.disabled=true; btn.innerText='Processing...';
     try{
       const orderData = await apiPost('order/create/',{order_type:currentOrderType, table_no:document.getElementById('table-no-input').value||''});
-      const orderId = orderData.order_id;
-      for(let item of cart) await apiPost('order/additem/',{order_id:orderId, item_id:item.id, qty:item.qty});
+      if(!orderData.order_id) throw new Error('No order id');
+      for(let item of cart) await apiPost('order/additem/',{order_id:orderData.order_id, item_id:item.id, qty:item.qty});
       lastToken = { token_no:orderData.token_no, items:[...cart], total:cart.reduce((s,i)=>s+i.qty*i.price,0), type:currentOrderType, table:document.getElementById('table-no-input').value||'' };
       showSlip(); cart=[]; renderCart(); showToast('Order placed! Token #'+String(orderData.token_no).padStart(3,'0')); switchPage('token',3);
-    } catch(e){ showToast('Order failed: '+e.message); }
-    finally{ btn.disabled=false; btn.innerText='Place Order'; }
+    } catch(e){ showToast('Order failed: '+e.message); } finally{ btn.disabled=false; btn.innerText='Place Order'; }
   }
   function showSlip(){
     if(!lastToken.token_no) return;
-    document.getElementById('slip-content').innerHTML = `<div class="slip-restaurant">Zaiqa</div><div class="slip-token-num">${String(lastToken.token_no).padStart(3,'0')}</div><div>${lastToken.type==='dine-in'?'Table '+lastToken.table:'Counter'}</div><div>Total: Rs.${lastToken.total}</div><button class="btn-print" onclick="window.print()">Print</button>`;
+    document.getElementById('slip-content').innerHTML = `<div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-token-num">${String(lastToken.token_no).padStart(3,'0')}</div><div>${lastToken.type==='dine-in'?'Table '+lastToken.table:'Counter Order'}</div><div>Total Rs.${lastToken.total}</div><button class="btn-print" onclick="window.print()">Print Slip</button>`;
   }
+
   async function loadKitchenOrders(){
     if(!(await checkPasswordVersion())) return;
     document.getElementById('kitchen-grid').innerHTML='<div class="loading"><div class="spinner"></div></div>';
@@ -342,14 +379,15 @@
       if(!items.length){ document.getElementById('kitchen-grid').innerHTML='<div class="empty-state">No pending orders</div>'; return; }
       let grouped={};
       items.forEach(i=>{ if(!grouped[i.order_id]) grouped[i.order_id]={token_no:i.token_no,type:i.order_type,table:i.table_no,status:i.status,items:[]}; grouped[i.order_id].items.push({name:i.item_name,emoji:i.emoji,qty:i.quantity}); });
-      document.getElementById('kitchen-grid').innerHTML = Object.entries(grouped).map(([oid,order])=>`
-        <div class="kitchen-card"><div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-        <div>${order.type==='dine-in'?'Table '+order.table:'Counter'}</div>
-        <ul>${order.items.map(i=>`<li>${i.emoji} ${i.name} x${i.qty}</li>`).join('')}</ul>
-        <div>Status: ${order.status}</div>
-        ${order.status==='pending'?`<button class="btn-ready" onclick="updateStatus(${oid},'ready')">Mark Ready</button>`:`<button class="btn-served" onclick="updateStatus(${oid},'served')">Mark Served</button>`}
-        </div>`).join('');
-      document.getElementById('pending-badge').innerText = Object.keys(grouped).length;
+      let html='';
+      Object.entries(grouped).forEach(([oid,order])=>{
+        html+=`<div class="kitchen-card ${order.status==='ready'?'ready':''}"><div class="k-token">#${String(order.token_no).padStart(3,'0')}</div><div>${order.type==='dine-in'?'Table '+order.table:'Counter'}</div><ul>${order.items.map(i=>`<li>${i.emoji} ${i.name} x${i.qty}</li>`).join('')}</ul><div>Status: ${order.status}</div>`;
+        if(order.status==='pending') html+=`<button class="btn-ready" onclick="updateStatus(${oid},'ready')">Mark Ready</button>`;
+        else html+=`<button class="btn-served" onclick="updateStatus(${oid},'served')">Mark Served</button>`;
+        html+=`</div>`;
+      });
+      document.getElementById('kitchen-grid').innerHTML=html;
+      document.getElementById('pending-badge').innerText=Object.keys(grouped).length;
     } catch(e){ document.getElementById('kitchen-grid').innerHTML='<div class="empty-state">Failed</div>'; }
   }
   async function updateStatus(orderId,status){
@@ -357,22 +395,24 @@
     showToast('Status updated');
     loadKitchenOrders();
   }
+
   async function loadMenuMgmt(){
     if(!(await checkPasswordVersion())) return;
     try{
       const data=await apiGet('menu/all/');
       const items=data.items||[];
       document.getElementById('mgmt-grid').innerHTML = items.map(item=>`
-        <div class="mgmt-card"><div>${item.emoji||''} ${item.name}</div><div>Rs.${item.price}</div>
-        <div><button onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||''}')">Edit</button>
+        <div class="mgmt-card"><div>${item.emoji||''} ${item.name}</div><div>Rs.${item.price}</div><div>${item.category}</div>
+        <button onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||''}')">Edit</button>
         <button onclick="toggleItem(${item.item_id})">${item.is_active==1?'Disable':'Enable'}</button>
-        <button onclick="deleteItem(${item.item_id})">Delete</button></div></div>`).join('');
+        <button onclick="deleteItem(${item.item_id})">Delete</button></div>`).join('');
     } catch(e){ document.getElementById('mgmt-grid').innerHTML='<div class="empty-state">Failed</div>'; }
   }
   async function toggleItem(id){ await apiPut('menu/toggle/',{item_id:id}); loadMenuMgmt(); loadMenuItems(); }
   async function deleteItem(id){ await apiPost('menu/delete/',{item_id:id}); loadMenuMgmt(); loadMenuItems(); }
-  function openAddModal(){ document.getElementById('modal-title').innerText='Add Item'; document.getElementById('modal-name').value=''; document.getElementById('modal-price').value=''; document.getElementById('modal-category').value=''; document.getElementById('modal-emoji').value=''; document.getElementById('modal-item-id').value=''; document.getElementById('modal-overlay').classList.add('show'); }
-  function openEditModal(id,name,price,category,emoji){ document.getElementById('modal-title').innerText='Edit Item'; document.getElementById('modal-name').value=name; document.getElementById('modal-price').value=price; document.getElementById('modal-category').value=category; document.getElementById('modal-emoji').value=emoji; document.getElementById('modal-item-id').value=id; document.getElementById('modal-overlay').classList.add('show'); }
+  function openAddModal(){ document.getElementById('modal-title').innerText='Add New Item'; clearModal(); document.getElementById('modal-overlay').classList.add('show'); }
+  function openEditModal(id,name,price,category,emoji){ document.getElementById('modal-title').innerText='Edit Item'; clearModal(); document.getElementById('modal-name').value=name; document.getElementById('modal-price').value=price; document.getElementById('modal-category').value=category; document.getElementById('modal-emoji').value=emoji; document.getElementById('modal-item-id').value=id; document.getElementById('modal-overlay').classList.add('show'); }
+  function clearModal(){ document.getElementById('modal-name').value=''; document.getElementById('modal-price').value=''; document.getElementById('modal-category').value=''; document.getElementById('modal-emoji').value=''; document.getElementById('modal-item-id').value=''; }
   function closeModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
   async function saveItem(){
     const id=document.getElementById('modal-item-id').value;
@@ -385,10 +425,9 @@
       if(id) await apiPut('menu/edit/',{item_id:parseInt(id),name,price:parseFloat(price),category,emoji});
       else await apiPost('menu/add/',{name,price:parseFloat(price),category,emoji});
       closeModal(); loadMenuMgmt(); loadMenuItems(); showToast('Saved');
-    } catch(e){ showToast('Failed'); }
+    } catch(e){ showToast('Save failed'); }
   }
-  document.querySelector('.btn-cancel')?.addEventListener('click',closeModal);
-  setInterval(()=>{ if(document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); },30000);
+  setInterval(()=>{ if(document.getElementById('page-kitchen')?.classList.contains('active')) loadKitchenOrders(); },30000);
   if(localStorage.getItem('loggedIn')==='true') loadDashboard();
 </script>
 </body>
