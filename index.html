@@ -544,36 +544,48 @@
             <div class="slip-footer">Please remember your token number.<br>Come to the counter when called.<br><strong style="color:var(--gold-light)">Zaiqa Restaurant</strong></div>
             <br><button class="btn-print" onclick="window.print()">Print Slip</button>`;
     }
-    async function loadKitchenOrders() {
-        if (!(await checkPasswordVersion())) return;
-        document.getElementById('kitchen-grid').innerHTML = '<div class="loading"><div class="spinner"></div> Loading orders...</div>';
-        try {
-            const data = await apiGet('orderss/pending/');
-            const items = data.items || [];
-            if(!items.length) { document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state"><p>No pending orders — all clear!</p></div>'; return; }
-            const grouped = {};
-            items.forEach(i => {
-                if(!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, type: i.order_type, table: i.table_no, status: i.status, items: [] };
-                grouped[i.order_id].items.push({ name: i.item_name, emoji: i.emoji, qty: i.quantity });
-            });
-            document.getElementById('kitchen-grid').innerHTML = Object.entries(grouped).map(([oid,order]) => {
-                const isReady = order.status === 'ready';
-                return `<div class="kitchen-card ${isReady?'ready':''}">
-                    <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-                    <div class="k-type">${order.type==='dine-in'?'Dine-in — Table '+order.table:'Counter Order'}</div>
-                    <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>x ${i.qty}</strong></li>`).join('')}</ul>
-                    <div class="k-time">Status: <span>${isReady?'Ready':'Pending'}</span></div>
-                    ${isReady ? `<button class="btn-served" onclick="updateStatus(${oid},'served')">Mark as Served</button>` : `<button class="btn-ready" onclick="updateStatus(${oid},'ready')">Mark as Ready</button>`}
-                </div>`;
-            }).join('');
-            document.getElementById('pending-badge').textContent = Object.keys(grouped).length + ' Pending';
-        } catch(e) { document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state"><p>Failed to load orders</p></div>'; }
+ async function loadKitchenOrders() {
+    document.getElementById('kitchen-grid').innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading orders...</div>';
+    try {
+        const data = await apiGet('orderss/pending/');
+        const items = data.items || [];
+        if (!items.length) {
+            document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>✅</div><p>No pending orders — all clear!</p></div>';
+            return;
+        }
+        const grouped = {};
+        items.forEach(i => {
+            if (!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, type: i.order_type, table: i.table_no, status: i.status, items: [] };
+            grouped[i.order_id].items.push({ name: i.item_name, emoji: i.emoji, qty: i.quantity });
+        });
+        document.getElementById('kitchen-grid').innerHTML = Object.entries(grouped).map(([orderId, order]) => {
+            const isReady = order.status === 'ready';
+            return `<div class="kitchen-card ${isReady?'ready':''}">
+                <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
+                <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Counter Order'}</div>
+                <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
+                <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
+                ${isReady
+                    ? `<button class="btn-served" onclick="updateStatus(${orderId},'served')">🚀 Mark as Served</button>`
+                    : `<button class="btn-ready" onclick="updateStatus(${orderId},'ready')">✅ Mark as Ready</button>`}
+            </div>`;
+        }).join('');
+        document.getElementById('pending-badge').textContent = Object.keys(grouped).length + ' Pending';
+    } catch(e) {
+        document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load orders</p></div>';
     }
-    async function updateStatus(orderId, status) {
-        await apiPut('orders/status/', { order_id: orderId, status: status });
-        showToast('Status updated — ' + status);
-        await loadKitchenOrders();
-    }
+}
+async function updateStatus(orderId, status) {
+    fetch(BASE_URL + 'orderss/status/', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId, status: status })
+    });
+    setTimeout(() => {
+        showToast('✅ Status updated — ' + status);
+        loadKitchenOrders();
+    }, 800);
+}
     async function loadMenuMgmt() {
         if (!(await checkPasswordVersion())) return;
         try {
