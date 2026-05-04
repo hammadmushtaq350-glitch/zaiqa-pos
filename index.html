@@ -634,7 +634,7 @@ async function updateStatus(orderId, status) {
             closeModal(); loadMenuMgmt(); loadMenuItems(); showToast('Saved');
         } catch(e) { showToast('Save failed'); }
     }
-    setInterval(() => { if(document.getElementById('page-kitchen') && document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); }, 15000);
+    setInterval(() => { if(document.getElementById('page-kitchen') && document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); }, 5000);
     setInterval(() => { if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')) loadDashboard(); }, 3000);
 
     if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
