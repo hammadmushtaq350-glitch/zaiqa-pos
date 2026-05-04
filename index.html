@@ -452,7 +452,7 @@
         } catch(e) { document.getElementById('dashboard-orders').innerHTML = '<div class="empty-state"><p>Failed to load data</p></div>'; }
         try {
             const mitems = (await apiGet('menu-items/')).items || [];
-            document.getElementById('dashboard-menu').innerHTML = mitems.length ? mitems.slice(0,5).map(item => `
+            document.getElementById('dashboard-menu').innerHTML = mitems.length ? mitems.map(item => `
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
                     <span style="font-size:24px">${item.emoji||''}</span>
                     <div style="flex:1"><div style="font-size:13px;font-weight:500">${item.name}</div><div style="font-size:11px;color:var(--text-dim)">${item.category}</div></div>
