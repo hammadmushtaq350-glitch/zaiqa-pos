@@ -450,12 +450,12 @@
     el.classList.add('active');
   }
 
-  async function apiGet(endpoint) {
+ async function apiGet(endpoint) {
     const restaurantId = localStorage.getItem('restaurantId');
-    const url = BASE_URL + endpoint + (endpoint.includes('?') ? '&' : '?') + 'restaurant_id=' + restaurantId;
+    const url = BASE_URL + endpoint + '?restaurant_id=' + restaurantId;
     const res = await fetch(url);
     return await res.json();
-  }
+}
 
   async function apiPost(endpoint, data) {
     const restaurantId = localStorage.getItem('restaurantId');
