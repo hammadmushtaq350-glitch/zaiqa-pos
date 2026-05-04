@@ -635,6 +635,11 @@ async function updateStatus(orderId, status) {
         } catch(e) { showToast('Save failed'); }
     }
     setInterval(() => { if(document.getElementById('page-kitchen') && document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); }, 30000);
+    setInterval(() => {
+    if (document.getElementById('page-dashboard')?.classList.contains('active')) {
+        loadDashboard();
+    }
+}, 15000);
     if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
 </script>
 </body>
