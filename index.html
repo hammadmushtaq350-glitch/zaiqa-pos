@@ -581,6 +581,12 @@
         if (!cart.length) { showToast('Please add items first'); return; }
         const btn = document.getElementById('place-btn'); btn.disabled=true; btn.textContent='Processing...';
         const tableNo = document.getElementById('table-no-input').value || '';
+-----------------
+    if (!tableNo || tableNo === '') {
+        showToast('Please select a table');
+        return;
+    }
+   ---------------     
         try {
             const orderData = await apiPost('order/create/', { order_type: currentOrderType, table_no: tableNo });
             if (!orderData.order_id) throw new Error('No order_id');
