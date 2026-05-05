@@ -265,7 +265,7 @@
                     <div class="section-label">Category</div>
                     <div class="cat-tabs" id="cat-tabs"><div class="cat-tab active" onclick="filterMenu('All',this)">All</div></div>
                     <div style="margin-bottom: 16px;">
-    <input type="text" id="orderSearchInput" placeholder="🔍 Search item by name or emoji..." class="cart-input" style="width: 100%;">
+    <input type="text" id="orderSearchInput" placeholder="🔍 Search item by name or emoji..." class="cart-input" style="width: 30%;">
 </div>
                     <div class="menu-grid" id="menu-grid"><div class="loading"><div class="spinner"></div> Loading menu...</div></div>
                 </div>
@@ -306,6 +306,12 @@
         <!-- MENU MANAGEMENT -->
         <div class="page" id="page-menu">
             <div class="menu-mgmt-header">
+                ----------------
+                <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+    <div class="cat-tabs" id="mgmtCatTabs" style="flex: 2;"></div>
+    <input type="text" id="mgmtSearchInput" placeholder="🔍 Search item..." class="cart-input" style="flex: 1; margin-bottom: 0;">
+</div>
+                ----------------
                 <div><div style="font-family:'Playfair Display'; font-size:22px; color:var(--gold-light)">Menu Management</div><div style="font-size:12px; color:var(--text-dim);" id="menu-count">Loading...</div></div>
                 <button class="btn-add-item" onclick="openAddModal()">+ Add New Item</button>
             </div>
@@ -408,6 +414,9 @@
     const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
     let allMenuItems = [], cart = [], currentOrderType = 'counter', lastToken = {};
 
+    let currentCategory = 'All';
+    let currentSearchTerm = '';
+
     function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-PK'); }
     setInterval(updateClock,1000); updateClock();
     function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'),3000); }
@@ -464,21 +473,51 @@
         } catch(e) { document.getElementById('dashboard-menu').innerHTML = '<div class="empty-state"><p>Failed to load menu</p></div>'; }
     }
 
-    async function loadMenuItems() {
-        if (!(await checkPasswordVersion())) return;
-        try {
-            const data = await apiGet('menu-items/');
-            allMenuItems = data.items || [];
-            const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-            document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`).join('');
-            renderMenuGrid(allMenuItems);
-            updateNextToken();
-        } catch(e) { document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>'; }
+async function loadMenuItems() {
+    if (!(await checkPasswordVersion())) return;
+    try {
+        const data = await apiGet('menu-items/');
+        allMenuItems = data.items || [];
+        const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
+        document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
+            `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
+        ).join('');
+        // Reset filters
+        currentCategory = 'All';
+        currentSearchTerm = '';
+        if (document.getElementById('orderSearch')) document.getElementById('orderSearch').value = '';
+        applyOrderFilters();  // Naya function
+        updateNextToken();
+    } catch(e) { 
+        document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
     }
-    function filterMenu(cat, el) {
-        document.querySelectorAll('.cat-tab').forEach(c=>c.classList.remove('active')); el.classList.add('active');
-        renderMenuGrid(cat==='All' ? allMenuItems : allMenuItems.filter(i=>i.category===cat));
+}
+function filterMenu(cat, el) {
+    document.querySelectorAll('.cat-tab').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentCategory = cat;
+    applyOrderFilters();
+}
+function applyOrderFilters() {
+    let filtered = [...allMenuItems];
+    // Category filter
+    if (currentCategory !== 'All') {
+        filtered = filtered.filter(i => i.category === currentCategory);
     }
+    // Search filter
+    if (currentSearchTerm.trim() !== '') {
+        const term = currentSearchTerm.trim().toLowerCase();
+        filtered = filtered.filter(i => 
+            i.name.toLowerCase().includes(term) || 
+            (i.emoji && i.emoji.toLowerCase().includes(term))
+        );
+    }
+    renderMenuGrid(filtered);
+}
+
+
+
+    
     function renderMenuGrid(items) {
         if(!items.length) { document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No items in this category</p></div>'; return; }
         document.getElementById('menu-grid').innerHTML = items.map(item => `
@@ -641,6 +680,14 @@ async function updateStatus(orderId, status) {
     setInterval(() => { if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')) loadDashboard(); }, 500);
 
     if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
+    // Search box event listener for New Order page
+const orderSearch = document.getElementById('orderSearch');
+if (orderSearch) {
+    orderSearch.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        applyOrderFilters();
+    });
+}
 </script>
 </body>
 </html>
