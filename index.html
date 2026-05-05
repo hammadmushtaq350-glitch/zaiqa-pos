@@ -349,7 +349,42 @@
     .btn-print {
         display: none !important;
     }
-}           
+} 
+
+/* Print styles: Sirf token slip print hogi, baaki sab hidden */
+@media print {
+    /* Hide everything except the slip container */
+    body * {
+        visibility: hidden;
+    }
+    .token-container, .token-container * {
+        visibility: visible;
+    }
+    .token-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
+    .slip {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        padding: 16px;
+    }
+    .btn-print {
+        display: none;
+    }
+    /* Remove any background colors for print */
+    .slip, .token-container {
+        background: white;
+        color: black;
+    }
+    .slip-restaurant, .slip-token-num, .slip-total {
+        color: black;
+    }
+}        
     </style>
 </head>
 <body>
