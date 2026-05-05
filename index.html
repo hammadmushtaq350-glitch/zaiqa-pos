@@ -127,7 +127,8 @@
         .btn-print{margin-top:16px;padding:12px 32px;background:linear-gradient(135deg,var(--gold),#a87c28);color:#000;font-weight:700;border:none;border-radius:10px;cursor:pointer;font-size:13px;}
 
         /* Menu management */
-        .menu-mgmt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+        .menu-mgmt-header{display:flex;flex-direction:column;gap:16px;margin-bottom:22px;}
+        .menu-mgmt-top{display:flex;align-items:center;justify-content:space-between;}
         .btn-add-item{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,var(--gold),#a87c28);color:#000;font-weight:700;font-size:13px;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,0.35);transition:all .2s;}
         .btn-add-item:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,0.45);}
         .mgmt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
@@ -150,6 +151,7 @@
         .btn-sm{flex:1;padding:7px;border-radius:8px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:1px solid;transition:all .2s;}
         .btn-edit{border-color:var(--border);color:var(--text-dim);background:transparent;}
         .btn-edit:hover{border-color:var(--gold);color:var(--gold);}
+        .filter-bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px;}
 
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:center;justify-content:center;}
         .modal-overlay.show{display:flex;}
@@ -265,8 +267,8 @@
                     <div class="section-label">Category</div>
                     <div class="cat-tabs" id="cat-tabs"><div class="cat-tab active" onclick="filterMenu('All',this)">All</div></div>
                     <div style="margin-bottom: 16px;">
-    <input type="text" id="orderSearchInput" placeholder="🔍 Search item by name or emoji..." class="cart-input" style="width: 30%;">
-</div>
+                        <input type="text" id="orderSearchInput" placeholder="🔍 Search item by name or emoji..." class="cart-input" style="width: 100%;">
+                    </div>
                     <div class="menu-grid" id="menu-grid"><div class="loading"><div class="spinner"></div> Loading menu...</div></div>
                 </div>
                 <div>
@@ -306,14 +308,14 @@
         <!-- MENU MANAGEMENT -->
         <div class="page" id="page-menu">
             <div class="menu-mgmt-header">
-                ----------------
-                <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
-    <div class="cat-tabs" id="mgmtCatTabs" style="flex: 2;"></div>
-    <input type="text" id="mgmtSearchInput" placeholder="🔍 Search item..." class="cart-input" style="flex: 1; margin-bottom: 0;">
-</div>
-                ----------------
-                <div><div style="font-family:'Playfair Display'; font-size:22px; color:var(--gold-light)">Menu Management</div><div style="font-size:12px; color:var(--text-dim);" id="menu-count">Loading...</div></div>
-                <button class="btn-add-item" onclick="openAddModal()">+ Add New Item</button>
+                <div class="menu-mgmt-top">
+                    <div><div style="font-family:'Playfair Display'; font-size:22px; color:var(--gold-light)">Menu Management</div><div style="font-size:12px; color:var(--text-dim);" id="menu-count">Loading...</div></div>
+                    <button class="btn-add-item" onclick="openAddModal()">+ Add New Item</button>
+                </div>
+                <div class="filter-bar">
+                    <div class="cat-tabs" id="mgmtCatTabs" style="flex:2;"></div>
+                    <input type="text" id="mgmtSearchInput" placeholder="🔍 Search item..." class="cart-input" style="flex:1; margin-bottom:0;">
+                </div>
             </div>
             <div class="mgmt-grid" id="mgmt-grid"><div class="loading"><div class="spinner"></div> Loading menu...</div></div>
         </div>
@@ -340,7 +342,7 @@
         } catch(e) { return true; }
     }
 
-    // ==================== LOGIN (DATABASE) ====================
+    // ==================== LOGIN ====================
     async function doLogin() {
         const username = document.getElementById('loginUser').value.trim();
         const password = document.getElementById('loginPass').value.trim();
@@ -414,8 +416,14 @@
     const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
     let allMenuItems = [], cart = [], currentOrderType = 'counter', lastToken = {};
 
+    // Filters for New Order page
     let currentCategory = 'All';
     let currentSearchTerm = '';
+
+    // Filters for Menu Management page
+    let mgmtAllItems = [];
+    let mgmtCurrentCategory = 'All';
+    let mgmtSearchTerm = '';
 
     function updateClock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-PK'); }
     setInterval(updateClock,1000); updateClock();
@@ -464,7 +472,8 @@
         } catch(e) { document.getElementById('dashboard-orders').innerHTML = '<div class="empty-state"><p>Failed to load data</p></div>'; }
         try {
             const mitems = (await apiGet('menu-items/')).items || [];
-            document.getElementById('dashboard-menu').innerHTML = mitems.length ? mitems.slice(0,7).map(item => ` 
+            // Show all active items without slice limit
+            document.getElementById('dashboard-menu').innerHTML = mitems.length ? mitems.map(item => ` 
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
                     <span style="font-size:24px">${item.emoji||''}</span>
                     <div style="flex:1"><div style="font-size:13px;font-weight:500">${item.name}</div><div style="font-size:11px;color:var(--text-dim)">${item.category}</div></div>
@@ -473,51 +482,56 @@
         } catch(e) { document.getElementById('dashboard-menu').innerHTML = '<div class="empty-state"><p>Failed to load menu</p></div>'; }
     }
 
-async function loadMenuItems() {
-    if (!(await checkPasswordVersion())) return;
-    try {
-        const data = await apiGet('menu-items/');
-        allMenuItems = data.items || [];
-        const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-        document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
-            `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
-        ).join('');
-        // Reset filters
-        currentCategory = 'All';
-        currentSearchTerm = '';
-        if (document.getElementById('orderSearch')) document.getElementById('orderSearch').value = '';
-        applyOrderFilters();  // Naya function
-        updateNextToken();
-    } catch(e) { 
-        document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
+    // ==================== NEW ORDER PAGE FILTERS ====================
+    async function loadMenuItems() {
+        if (!(await checkPasswordVersion())) return;
+        try {
+            const data = await apiGet('menu-items/');
+            allMenuItems = data.items || [];
+            const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
+            document.getElementById('cat-tabs').innerHTML = cats.map((c,idx) => 
+                `<div class="cat-tab ${idx===0?'active':''}" onclick="filterMenu('${c}',this)">${c}</div>`
+            ).join('');
+            // Reset filters
+            currentCategory = 'All';
+            currentSearchTerm = '';
+            const searchInput = document.getElementById('orderSearchInput');
+            if (searchInput) searchInput.value = '';
+            applyOrderFilters();
+            updateNextToken();
+        } catch(e) { 
+            document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>Failed to load menu</p></div>';
+        }
     }
-}
-function filterMenu(cat, el) {
-    document.querySelectorAll('.cat-tab').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    currentCategory = cat;
-    applyOrderFilters();
-}
-function applyOrderFilters() {
-    let filtered = [...allMenuItems];
-    // Category filter
-    if (currentCategory !== 'All') {
-        filtered = filtered.filter(i => i.category === currentCategory);
+
+    function filterMenu(cat, el) {
+        document.querySelectorAll('.cat-tab').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        currentCategory = cat;
+        applyOrderFilters();
     }
-    // Search filter
-    if (currentSearchTerm.trim() !== '') {
-        const term = currentSearchTerm.trim().toLowerCase();
-        filtered = filtered.filter(i => 
-            i.name.toLowerCase().includes(term) || 
-            (i.emoji && i.emoji.toLowerCase().includes(term))
-        );
+
+    function applyOrderFilters() {
+        let filtered = [...allMenuItems];
+        if (currentCategory !== 'All') {
+            filtered = filtered.filter(i => i.category === currentCategory);
+        }
+        if (currentSearchTerm.trim() !== '') {
+            const term = currentSearchTerm.trim().toLowerCase();
+            filtered = filtered.filter(i => 
+                i.name.toLowerCase().includes(term) || 
+                (i.emoji && i.emoji.toLowerCase().includes(term))
+            );
+        }
+        renderMenuGrid(filtered);
     }
-    renderMenuGrid(filtered);
-}
 
+    // Search event listener for new order page
+    document.getElementById('orderSearchInput')?.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        applyOrderFilters();
+    });
 
-
-    
     function renderMenuGrid(items) {
         if(!items.length) { document.getElementById('menu-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No items in this category</p></div>'; return; }
         document.getElementById('menu-grid').innerHTML = items.map(item => `
@@ -528,6 +542,7 @@ function applyOrderFilters() {
                 <div class="menu-price">Rs. ${item.price}</div>
             </div>`).join('');
     }
+
     async function updateNextToken() {
         try {
             const data = await apiGet('orderss/pending/');
@@ -536,11 +551,13 @@ function applyOrderFilters() {
             document.getElementById('next-token').textContent = '#' + String(maxToken+1).padStart(3,'0');
         } catch(e) {}
     }
+
     function addToCart(id, name, price, emoji) {
         const existing = cart.find(i => i.id === id);
         if(existing) existing.qty++; else cart.push({ id, name, price, emoji, qty:1 });
         renderCart(); showToast(name + ' added to order');
     }
+
     function renderCart() {
         if(!cart.length) { document.getElementById('cart-items').innerHTML = '<div style="padding:20px 0;text-align:center">Add items from the menu</div>'; document.getElementById('cart-total').textContent = 'Rs. 0'; return; }
         let total=0;
@@ -551,11 +568,13 @@ function applyOrderFilters() {
         }).join('');
         document.getElementById('cart-total').textContent = 'Rs. ' + total;
     }
+
     function setOrderType(type, el) {
         currentOrderType = type;
         document.querySelectorAll('.otype-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
         document.getElementById('table-input-wrap').style.display = type === 'dine-in' ? 'block' : 'none';
     }
+
     async function placeOrder() {
         if (!(await checkPasswordVersion())) return;
         if (!cart.length) { showToast('Please add items first'); return; }
@@ -573,6 +592,7 @@ function applyOrderFilters() {
         } catch(e) { showToast('Order failed: ' + (e.message||'Try again')); }
         finally { btn.disabled=false; btn.textContent='Place Order'; }
     }
+
     function showSlip() {
         if(!lastToken.token_no) return;
         const itemsHtml = lastToken.items.map(i => `<div class="slip-item-row"><span>${i.emoji} ${i.name} x ${i.qty}</span><span style="font-family:monospace;color:var(--gold)">Rs. ${i.qty*i.price}</span></div>`).join('');
@@ -586,66 +606,117 @@ function applyOrderFilters() {
             <div class="slip-footer">Please remember your token number.<br>Come to the counter when called.<br><strong style="color:var(--gold-light)">Zaiqa Restaurant</strong></div>
             <br><button class="btn-print" onclick="window.print()">Print Slip</button>`;
     }
- async function loadKitchenOrders() {
-    document.getElementById('kitchen-grid').innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading orders...</div>';
-    try {
-        const data = await apiGet('orderss/pending/');
-        const items = data.items || [];
-        if (!items.length) {
-            document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>✅</div><p>No pending orders — all clear!</p></div>';
-            return;
+
+    async function loadKitchenOrders() {
+        document.getElementById('kitchen-grid').innerHTML = '<div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading orders...</div>';
+        try {
+            const data = await apiGet('orderss/pending/');
+            const items = data.items || [];
+            if (!items.length) {
+                document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>✅</div><p>No pending orders — all clear!</p></div>';
+                return;
+            }
+            const grouped = {};
+            items.forEach(i => {
+                if (!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, type: i.order_type, table: i.table_no, status: i.status, items: [] };
+                grouped[i.order_id].items.push({ name: i.item_name, emoji: i.emoji, qty: i.quantity });
+            });
+            document.getElementById('kitchen-grid').innerHTML = Object.entries(grouped).map(([orderId, order]) => {
+                const isReady = order.status === 'ready';
+                return `<div class="kitchen-card ${isReady?'ready':''}">
+                    <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
+                    <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Counter Order'}</div>
+                    <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
+                    <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
+                    ${isReady
+                        ? `<button class="btn-served" onclick="updateStatus(${orderId},'served')">🚀 Mark as Served</button>`
+                        : `<button class="btn-ready" onclick="updateStatus(${orderId},'ready')">✅ Mark as Ready</button>`}
+                </div>`;
+            }).join('');
+            document.getElementById('pending-badge').textContent = Object.keys(grouped).length + ' Pending';
+        } catch(e) {
+            document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load orders</p></div>';
         }
-        const grouped = {};
-        items.forEach(i => {
-            if (!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, type: i.order_type, table: i.table_no, status: i.status, items: [] };
-            grouped[i.order_id].items.push({ name: i.item_name, emoji: i.emoji, qty: i.quantity });
-        });
-        document.getElementById('kitchen-grid').innerHTML = Object.entries(grouped).map(([orderId, order]) => {
-            const isReady = order.status === 'ready';
-            return `<div class="kitchen-card ${isReady?'ready':''}">
-                <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-                <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Counter Order'}</div>
-                <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
-                <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
-                ${isReady
-                    ? `<button class="btn-served" onclick="updateStatus(${orderId},'served')">🚀 Mark as Served</button>`
-                    : `<button class="btn-ready" onclick="updateStatus(${orderId},'ready')">✅ Mark as Ready</button>`}
-            </div>`;
-        }).join('');
-        document.getElementById('pending-badge').textContent = Object.keys(grouped).length + ' Pending';
-    } catch(e) {
-        document.getElementById('kitchen-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div>⚠️</div><p>Failed to load orders</p></div>';
     }
-}
-async function updateStatus(orderId, status) {
-    fetch(BASE_URL + 'orderss/status/', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, status: status })
-    });
-    setTimeout(() => {
-        showToast('✅ Status updated — ' + status);
-        loadKitchenOrders();
-    }, 800);
-}
+
+    async function updateStatus(orderId, status) {
+        fetch(BASE_URL + 'orderss/status/', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_id: orderId, status: status })
+        });
+        setTimeout(() => {
+            showToast('✅ Status updated — ' + status);
+            loadKitchenOrders();
+        }, 800);
+    }
+
+    // ==================== MENU MANAGEMENT WITH FILTERS ====================
     async function loadMenuMgmt() {
         if (!(await checkPasswordVersion())) return;
         try {
             const data = await apiGet('menu/all/');
-            const items = data.items || [];
-            const activeCount = items.filter(i => i.is_active == 1).length;
-            document.getElementById('menu-count').textContent = activeCount + ' active / ' + items.length + ' total items';
-            document.getElementById('mgmt-grid').innerHTML = items.length ? items.map(item => `
-                <div class="mgmt-card ${item.is_active==1?'':'inactive'}" id="card-${item.item_id}">
-                    <span class="mgmt-emoji">${item.emoji||''}</span>
-                    <div class="mgmt-name">${item.name}</div><div class="mgmt-cat">${item.category}</div>
-                    <div class="mgmt-price">Rs. ${item.price}</div>
-                    <div class="toggle-wrap"><span class="toggle-label" id="lbl-${item.item_id}">${item.is_active==1?'Available':'Unavailable'}</span>
-                    <div class="toggle ${item.is_active==1?'on':'off'}" id="tog-${item.item_id}" onclick="toggleItem(${item.item_id})"><div class="toggle-dot"></div></div></div>
-                    <div class="mgmt-actions"><button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name.replace(/'/g,"\\'")}',${item.price},'${item.category}','${item.emoji||''}')">Edit</button></div>
-                </div>`).join('') : '<div class="empty-state"><p>No items found</p></div>';
-        } catch(e) { document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state"><p>Failed to load menu</p></div>'; }
+            mgmtAllItems = data.items || [];
+            const cats = ['All', ...new Set(mgmtAllItems.map(i => i.category))];
+            document.getElementById('mgmtCatTabs').innerHTML = cats.map((c,idx) => 
+                `<div class="cat-tab ${idx===0?'active':''}" onclick="mgmtFilterMenu('${c}',this)">${c}</div>`
+            ).join('');
+            mgmtCurrentCategory = 'All';
+            mgmtSearchTerm = '';
+            const searchInput = document.getElementById('mgmtSearchInput');
+            if (searchInput) searchInput.value = '';
+            applyMgmtFilters();
+        } catch(e) {
+            document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state"><p>Failed to load menu</p></div>';
+        }
     }
+
+    function mgmtFilterMenu(cat, el) {
+        document.querySelectorAll('#mgmtCatTabs .cat-tab').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        mgmtCurrentCategory = cat;
+        applyMgmtFilters();
+    }
+
+    function applyMgmtFilters() {
+        let filtered = [...mgmtAllItems];
+        if (mgmtCurrentCategory !== 'All') {
+            filtered = filtered.filter(i => i.category === mgmtCurrentCategory);
+        }
+        if (mgmtSearchTerm.trim() !== '') {
+            const term = mgmtSearchTerm.trim().toLowerCase();
+            filtered = filtered.filter(i => 
+                i.name.toLowerCase().includes(term) || 
+                (i.emoji && i.emoji.toLowerCase().includes(term))
+            );
+        }
+        renderMgmtGrid(filtered);
+        const activeCount = filtered.filter(i => i.is_active == 1).length;
+        document.getElementById('menu-count').textContent = activeCount + ' active / ' + mgmtAllItems.length + ' total items';
+    }
+
+    function renderMgmtGrid(items) {
+        if(!items.length) {
+            document.getElementById('mgmt-grid').innerHTML = '<div class="empty-state"><p>No items found</p></div>';
+            return;
+        }
+        document.getElementById('mgmt-grid').innerHTML = items.map(item => `
+            <div class="mgmt-card ${item.is_active==1?'':'inactive'}" id="card-${item.item_id}">
+                <span class="mgmt-emoji">${item.emoji||''}</span>
+                <div class="mgmt-name">${item.name}</div>
+                <div class="mgmt-cat">${item.category}</div>
+                <div class="mgmt-price">Rs. ${item.price}</div>
+                <div class="toggle-wrap"><span class="toggle-label" id="lbl-${item.item_id}">${item.is_active==1?'Available':'Unavailable'}</span>
+                <div class="toggle ${item.is_active==1?'on':'off'}" id="tog-${item.item_id}" onclick="toggleItem(${item.item_id})"><div class="toggle-dot"></div></div></div>
+                <div class="mgmt-actions"><button class="btn-sm btn-edit" onclick="openEditModal(${item.item_id},'${item.name.replace(/'/g,"\\'")}',${item.price},'${item.category}','${item.emoji||''}')">Edit</button></div>
+            </div>`).join('');
+    }
+
+    document.getElementById('mgmtSearchInput')?.addEventListener('input', (e) => {
+        mgmtSearchTerm = e.target.value;
+        applyMgmtFilters();
+    });
+
     async function toggleItem(id) {
         try {
             await apiPut('menu/toggle/', { item_id: id });
@@ -658,6 +729,7 @@ async function updateStatus(orderId, status) {
             loadMenuItems(); loadMenuMgmt();
         } catch(e) { showToast('Update failed.'); }
     }
+
     function openAddModal() { document.getElementById('modal-title').innerText='Add New Item'; clearModal(); document.getElementById('modal-overlay').classList.add('show'); }
     function openEditModal(id,name,price,category,emoji) { document.getElementById('modal-title').innerText='Edit Item'; clearModal(); document.getElementById('modal-name').value=name; document.getElementById('modal-price').value=price; document.getElementById('modal-category').value=category; document.getElementById('modal-emoji').value=emoji; document.getElementById('modal-item-id').value=id; document.getElementById('modal-overlay').classList.add('show'); }
     function clearModal() { document.getElementById('modal-name').value=''; document.getElementById('modal-price').value=''; document.getElementById('modal-category').value=''; document.getElementById('modal-emoji').value=''; document.getElementById('modal-item-id').value=''; }
@@ -676,18 +748,11 @@ async function updateStatus(orderId, status) {
             closeModal(); loadMenuMgmt(); loadMenuItems(); showToast('Saved');
         } catch(e) { showToast('Save failed'); }
     }
+
     setInterval(() => { if(document.getElementById('page-kitchen') && document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); }, 10000);
-    setInterval(() => { if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')) loadDashboard(); }, 500);
+    setInterval(() => { if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')) loadDashboard(); }, 5000);
 
     if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
-    // Search box event listener for New Order page
-const orderSearch = document.getElementById('orderSearch');
-if (orderSearch) {
-    orderSearch.addEventListener('input', (e) => {
-        currentSearchTerm = e.target.value;
-        applyOrderFilters();
-    });
-}
 </script>
 </body>
 </html>
