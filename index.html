@@ -262,7 +262,9 @@
                         <div class="otype-tab" onclick="setOrderType('dine-in',this)">Dine-in / Table</div>
                     </div>
                     <div id="table-input-wrap" style="display:none; margin-bottom:16px;">
-                        <input class="cart-input" id="table-no-input" placeholder="Table number e.g. T4">
+                        <select class="cart-input" id="table-no-input" style="width:100%;">
+    <option value="">Select Table</option>
+</select>
                     </div>
                     <div class="section-label">Category</div>
                     <div class="cat-tabs" id="cat-tabs"><div class="cat-tab active" onclick="filterMenu('All',this)">All</div></div>
@@ -284,7 +286,6 @@
                 </div>
             </div>
         </div>
-
         <!-- KITCHEN -->
         <div class="page" id="page-kitchen">
             <div style="display:flex; justify-content:space-between; margin-bottom:22px">
@@ -752,7 +753,24 @@
     setInterval(() => { if(document.getElementById('page-kitchen') && document.getElementById('page-kitchen').classList.contains('active')) loadKitchenOrders(); }, 10000);
     setInterval(() => { if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')) loadDashboard(); }, 5000);
 
-    if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
+  // Pehle function define karo
+function populateTables(min, max) {
+    const select = document.getElementById('table-no-input');
+    if (!select) return;
+    while (select.options.length > 1) select.remove(1);
+    for (let i = min; i <= max; i++) {
+        const opt = document.createElement('option');
+        opt.value = 'Table ' + i;
+        opt.textContent = 'Table ' + i;
+        select.appendChild(opt);
+    }
+}
+
+// Phir function call karo
+populateTables(1, 20);
+
+// Phir last line
+   if(localStorage.getItem('loggedIn') === 'true') loadDashboard();
 </script>
 </body>
 </html>
