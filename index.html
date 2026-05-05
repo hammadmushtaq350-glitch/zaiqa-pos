@@ -608,7 +608,7 @@
             <div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-sub">Premium Food Experience</div>
             <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px">Your Token Number</div>
             <div class="slip-token-num">${String(lastToken.token_no).padStart(3,'0')}</div>
-            <div style="font-size:13px;margin-bottom:20px">${lastToken.type==='dine-in'?'Dine-in Table '+lastToken.table:'Counter Order'} — ${new Date().toLocaleString()}</div>
+            <div style="font-size:13px;margin-bottom:20px">${lastToken.type==='dine-in'?'DINE-IN TABLE # '+lastToken.table:'TAKE AWAY ORDER'} — ${new Date().toLocaleString()}</div>
             <div class="slip-divider"></div><div class="slip-items">${itemsHtml}</div>
             <div class="slip-total"><div style="text-transform:uppercase;color:var(--text-dim)">Total Amount</div><div style="font-family:monospace;font-size:16px;font-weight:700;color:var(--gold)">Rs. ${lastToken.total}</div></div>
             <div class="slip-footer">Please remember your token number.<br>Come to the counter when called.<br><strong style="color:var(--gold-light)">Zaiqa Restaurant</strong></div>
