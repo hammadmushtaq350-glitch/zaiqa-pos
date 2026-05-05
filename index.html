@@ -633,7 +633,7 @@
                 const isReady = order.status === 'ready';
                 return `<div class="kitchen-card ${isReady?'ready':''}">
                     <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-                    <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Counter Order'}</div>
+                    <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Take Away Order'}</div>
                     <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
                     <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
                     ${isReady
