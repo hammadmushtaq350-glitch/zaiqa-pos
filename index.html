@@ -464,7 +464,7 @@
                 `<table class="orders-table"><thead><tr><th>Token</th><th>Type</th><th>Item</th><th>Status</th></tr></thead><tbody>${
                     items.slice(0,8).map(o => `<tr>
                         <td><strong style="color:var(--gold);font-family:monospace">#${String(o.token_no).padStart(3,'0')}</strong></td>
-                        <td>${o.order_type}</td>
+                        <td>${o.order_type === 'counter' ? 'TAKE AWAY' : o.order_type === 'dine-in' ? 'DINE-IN' : o.order_type}</td>
                         <td>${o.emoji||''} ${o.item_name}</td>
                         <td><span class="status-pill ${o.status}">${o.status}</span></td>
                       </tr>`).join('')
