@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ZAIQA POS — Live System</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -170,7 +170,7 @@
         @keyframes spin{to{transform:rotate(360deg);}}
         .empty-state{text-align:center;padding:40px;color:var(--text-dim);}
 
-        /* ========== RESPONSIVE MEDIA QUERIES ========== */
+        /* ========== PROFESSIONAL RESPONSIVE MEDIA QUERIES ========== */
         /* Tablet landscape (1024px and below) */
         @media (max-width: 1024px) {
             .order-layout { grid-template-columns: 1fr; gap: 24px; }
@@ -205,6 +205,7 @@
             .cart-row { gap: 8px; }
             .cart-qty { width: 32px; height: 32px; }
             .btn-place { padding: 14px; font-size: 16px; }
+            /* Improved Tabs for mobile: use flex-wrap with scroll */
             .page-tabs { overflow-x: auto; flex-wrap: nowrap; gap: 0; padding-bottom: 8px; }
             .tab { flex: 0 0 auto; padding: 8px 16px; }
             .cat-tabs { overflow-x: auto; flex-wrap: nowrap; gap: 8px; padding-bottom: 8px; }
@@ -393,12 +394,12 @@
                 <div>
                     <div class="section-label">Order Type</div>
                     <div class="order-type-tabs">
-                        <div class="otype-tab active" onclick="setOrderType('counter',this)">TAKE AWAY ORDER</div>
-                        <div class="otype-tab" onclick="setOrderType('dine-in',this)">DINE-IN / TABLE #</div>
+                        <div class="otype-tab active" onclick="setOrderType('counter',this)">🍽️ Take Away</div>
+                        <div class="otype-tab" onclick="setOrderType('dine-in',this)">🥂 Dine-in</div>
                     </div>
                     <div id="table-input-wrap" style="display:none; margin-bottom:16px;">
                         <select class="cart-input" id="table-no-input" style="width:100%;">
-                            <option value="">SELECT DINE-IN / TABLE</option>
+                            <option value="">Select Table</option>
                         </select>
                     </div>
                     <div class="section-label">Category</div>
@@ -603,7 +604,7 @@
                 `<table class="orders-table"><thead><tr><th>Token</th><th>Order Type</th><th>Item</th><th>Status</th></tr></thead><tbody>${
                     items.slice(0,8).map(o => `<tr>
                         <td><strong style="color:var(--gold);font-family:monospace">#${String(o.token_no).padStart(3,'0')}</strong></td>
-                        <td>${o.order_type === 'counter' ? 'TAKE AWAY' : o.order_type === 'dine-in' ? 'DINE-IN' : o.order_type}</td>
+                        <td>${o.order_type === 'counter' ? '🍽️ Take Away' : o.order_type === 'dine-in' ? '🥂 Dine-in' : o.order_type}</td>
                         <td>${o.emoji||''} ${o.item_name}</td>
                         <td><span class="status-pill ${o.status}">${o.status}</span></td>
                       </tr>`).join('')
@@ -612,6 +613,7 @@
         } catch(e) { document.getElementById('dashboard-orders').innerHTML = '<div class="empty-state"><p>Failed to load data</p></div>'; }
         try {
             const mitems = (await apiGet('menu-items/')).items || [];
+            // Show all active items without slice limit
             document.getElementById('dashboard-menu').innerHTML = mitems.length ? mitems.slice(0,7).map(item => ` 
                 <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
                     <span style="font-size:24px">${item.emoji||''}</span>
@@ -714,7 +716,6 @@
         const tableWrap = document.getElementById('table-input-wrap');
         if (type === 'dine-in') {
             tableWrap.style.display = 'block';
-            // Optionally auto-select first table if exists (already populated)
         } else {
             tableWrap.style.display = 'none';
         }
@@ -751,7 +752,7 @@
             <div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-sub">Premium Food Experience</div>
             <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px">Your Token Number</div>
             <div class="slip-token-num">${String(lastToken.token_no).padStart(3,'0')}</div>
-            <div style="font-size:13px;margin-bottom:20px">${lastToken.type==='dine-in'?'DINE-IN TABLE # '+lastToken.table:'TAKE AWAY ORDER'} — ${new Date().toLocaleString()}</div>
+            <div style="font-size:13px;margin-bottom:20px">${lastToken.type==='dine-in'?'🍽️ Dine-in — Table '+lastToken.table:'🥡 Take Away Order'} — ${new Date().toLocaleString()}</div>
             <div class="slip-divider"></div><div class="slip-items">${itemsHtml}</div>
             <div class="slip-total"><div style="text-transform:uppercase;color:var(--text-dim)">Total Amount</div><div style="font-family:monospace;font-size:16px;font-weight:700;color:var(--gold)">Rs. ${lastToken.total}</div></div>
             <div class="slip-footer">Please remember your token number.<br>Come to the counter when called.<br><strong style="color:var(--gold-light)">Zaiqa Restaurant</strong></div>
@@ -776,7 +777,7 @@
                 const isReady = order.status === 'ready';
                 return `<div class="kitchen-card ${isReady?'ready':''}">
                     <div class="k-token">#${String(order.token_no).padStart(3,'0')}</div>
-                    <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'⬛ Take Away Order'}</div>
+                    <div class="k-type">${order.type==='dine-in'?'🍽️ Dine-in — Table '+order.table:'🥡 Take Away Order'}</div>
                     <ul class="k-items">${order.items.map(i=>`<li><span>${i.emoji||''} ${i.name}</span><strong>× ${i.qty}</strong></li>`).join('')}</ul>
                     <div class="k-time">Status: <span>${isReady?'✅ Ready':'⏳ Pending'}</span></div>
                     ${isReady
