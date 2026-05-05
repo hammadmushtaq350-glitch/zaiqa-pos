@@ -304,6 +304,52 @@
                 right: 8px;
             }
         }
+
+  /* Print styles - sirf token slip print ho */
+@media print {
+    /* Hide everything except token slip container */
+    body * {
+        visibility: hidden;
+    }
+    .token-container, .token-container * {
+        visibility: visible;
+    }
+    .token-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    /* Hide sidebar, topbar, tabs, buttons */
+    .sidebar, .topbar, .page-tabs, .mobile-menu-toggle, .btn-print, .toast, .modal-overlay {
+        display: none !important;
+    }
+    /* Remove all backgrounds and shadows */
+    body, .slip, .token-container {
+        background: white;
+        color: black;
+        box-shadow: none;
+        border: none;
+    }
+    /* Adjust slip styles for print */
+    .slip {
+        padding: 20px;
+        margin: 0 auto;
+        border-radius: 0;
+    }
+    .slip::before {
+        display: none;
+    }
+    .slip-token-num {
+        color: black;
+        text-shadow: none;
+    }
+    .btn-print {
+        display: none !important;
+    }
+}           
     </style>
 </head>
 <body>
