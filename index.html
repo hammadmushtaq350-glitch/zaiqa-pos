@@ -384,6 +384,41 @@
     .slip-restaurant, .slip-token-num, .slip-total {
         color: black;
     }
+}      
+
+/* Print styles – only token slip will print */
+@media print {
+    /* Hide everything except token slip container */
+    body * {
+        visibility: hidden;
+    }
+    .token-container, .token-container * {
+        visibility: visible;
+    }
+    .token-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    /* Optional: slip ka background, border, shadow hata do for cleaner print */
+    .slip {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-after: avoid;
+        break-inside: avoid;
+    }
+    /* Hide print button inside slip */
+    .btn-print {
+        display: none;
+    }
+    /* Remove URL, date, header/footer from browser print settings (browser settings se bhi ho sakta hai) */
+    @page {
+        margin: 0.5cm;
+        size: auto;
+    }
 }        
     </style>
 </head>
