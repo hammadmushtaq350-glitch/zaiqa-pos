@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ZAIQA POS — Live System</title>
-   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
   --bg: #0b1220;
@@ -173,7 +173,54 @@ body{
   background:rgba(0,0,0,0.6);
   border:1px solid var(--primary);
 }
+
+  /* ===== MODERN ENHANCEMENT (SAFE) ===== */
+
+body {
+  background: radial-gradient(circle at top, #0f172a, #020617);
+}
+
+/* Cards enhance */
+.card, .stat-card, .menu-card, .cart-panel {
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Hover smooth */
+.card:hover, .menu-card:hover, .stat-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Button upgrade */
+.btn-place {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border-radius: 12px;
+}
+
+/* Inputs modern */
+.cart-input, .modal-input {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Sidebar slight modern */
+.sidebar {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+}
+
+/* Topbar */
+.topbar {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+}      
+* {
+  font-family: 'Inter', sans-serif;
+}
+        
     </style>
+    
 </head>
 <body>
 
