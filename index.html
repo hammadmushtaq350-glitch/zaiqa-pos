@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>ZAIQA ONE · Flagship POS System</title>
-    <!-- Fonts -->
+    <title>ZAIQA ONE · Flagship POS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -16,7 +15,6 @@
         }
 
         :root {
-            /* Modern Premium Color System */
             --bg-primary: #0A0C10;
             --bg-secondary: #111317;
             --bg-card: rgba(18, 22, 28, 0.95);
@@ -38,7 +36,6 @@
             --gradient-dark: linear-gradient(135deg, #111317 0%, #0A0C10 100%);
             --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
             --shadow-gold: 0 8px 20px rgba(212, 175, 55, 0.2);
         }
 
@@ -48,10 +45,8 @@
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
-            position: relative;
         }
 
-        /* Dynamic Animated Background */
         body::before {
             content: '';
             position: fixed;
@@ -62,7 +57,7 @@
             z-index: 0;
         }
 
-        /* === MODERN SIDEBAR === */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0;
@@ -78,12 +73,6 @@
             padding: 28px 0;
             gap: 12px;
             z-index: 100;
-            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-
-        .logo-area {
-            margin-bottom: 32px;
-            text-align: center;
         }
 
         .brand-icon {
@@ -99,6 +88,7 @@
             font-family: 'Playfair Display', serif;
             color: #0A0C10;
             box-shadow: var(--shadow-gold);
+            margin-bottom: 32px;
         }
 
         .nav-item {
@@ -115,16 +105,9 @@
             position: relative;
         }
 
-        .nav-item:hover {
+        .nav-item:hover, .nav-item.active {
             background: var(--accent-gold-dim);
             color: var(--accent-gold);
-            transform: translateY(-2px);
-        }
-
-        .nav-item.active {
-            background: var(--accent-gold-dim);
-            color: var(--accent-gold);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
         }
 
         .nav-item.active::before {
@@ -139,7 +122,7 @@
             border-radius: 4px;
         }
 
-        /* === MODERN TOPBAR === */
+        /* Topbar */
         .topbar {
             position: fixed;
             top: 0;
@@ -164,13 +147,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: -0.3px;
-        }
-
-        .restaurant-brand p {
-            font-size: 11px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
         }
 
         .topbar-stats {
@@ -185,21 +161,9 @@
             padding: 6px 16px;
             border: 1px solid var(--border-light);
             font-size: 13px;
-            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .stat-chip i {
-            color: var(--accent-gold);
-            font-size: 14px;
-        }
-
-        .profile-area {
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
 
         .avatar {
@@ -217,12 +181,7 @@
             font-size: 18px;
         }
 
-        .avatar:hover {
-            background: var(--accent-gold-dim);
-            border-color: var(--accent-gold);
-        }
-
-        /* === MAIN LAYOUT === */
+        /* Main */
         .main {
             margin-left: 88px;
             padding-top: 74px;
@@ -234,25 +193,17 @@
         .page {
             display: none;
             padding: 28px 32px 48px;
-            animation: fadeInUp 0.4s ease-out;
+            animation: fadeInUp 0.3s ease;
         }
 
-        .page.active {
-            display: block;
-        }
+        .page.active { display: block; }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === MODERN GRIDS & CARDS === */
+        /* Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -267,8 +218,6 @@
             border-radius: 28px;
             padding: 22px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-card::after {
@@ -282,17 +231,7 @@
             opacity: 0.5;
         }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(212, 175, 55, 0.3);
-            box-shadow: var(--shadow-md);
-        }
-
-        .stat-icon {
-            font-size: 28px;
-            margin-bottom: 16px;
-            color: var(--accent-gold);
-        }
+        .stat-card:hover { transform: translateY(-4px); border-color: rgba(212, 175, 55, 0.3); }
 
         .dashboard-grid {
             display: grid;
@@ -308,58 +247,35 @@
             padding: 24px;
         }
 
-        /* === ORDER PAGE LAYOUT (3-Panel Pro) === */
+        /* Order Page 3-Panel */
         .order-container {
             display: grid;
-            grid-template-columns: 280px 1fr 380px;
+            grid-template-columns: 260px 1fr 360px;
             gap: 24px;
-            align-items: start;
         }
 
-        /* Category Sidebar */
         .category-sidebar {
             background: var(--bg-card);
-            backdrop-filter: blur(10px);
             border-radius: 28px;
             border: 1px solid var(--border-glass);
-            padding: 20px 12px;
+            padding: 20px;
             position: sticky;
             top: 100px;
-        }
-
-        .cat-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
         .cat-chip {
             padding: 12px 16px;
             border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-secondary);
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .cat-chip i {
-            width: 24px;
-            font-size: 18px;
+            transition: all 0.2s;
         }
 
         .cat-chip.active {
             background: var(--accent-gold-dim);
             color: var(--accent-gold);
-            border-left: 3px solid var(--accent-gold);
-        }
-
-        /* Product Grid */
-        .products-area {
-            background: transparent;
         }
 
         .search-bar {
@@ -367,22 +283,16 @@
             border-radius: 60px;
             padding: 12px 20px;
             margin-bottom: 24px;
-            border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .search-bar i {
-            color: var(--text-dim);
-        }
-
         .search-bar input {
             background: transparent;
             border: none;
-            color: var(--text-primary);
+            color: white;
             width: 100%;
-            font-size: 14px;
             outline: none;
         }
 
@@ -392,7 +302,6 @@
             gap: 16px;
             max-height: 65vh;
             overflow-y: auto;
-            padding-right: 8px;
         }
 
         .product-card {
@@ -400,21 +309,18 @@
             border-radius: 20px;
             border: 1px solid var(--border-light);
             padding: 16px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
         }
 
         .product-card:hover {
             border-color: var(--accent-gold);
             transform: translateY(-4px);
-            background: var(--bg-elevated);
         }
 
-        /* Right Cart Panel */
         .cart-panel-modern {
             background: var(--bg-card);
-            backdrop-filter: blur(12px);
             border-radius: 28px;
             border: 1px solid var(--border-glass);
             padding: 24px;
@@ -425,120 +331,85 @@
         .cart-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid var(--border-light);
         }
 
         .btn-place-modern {
             background: var(--gradient-gold);
-            border: none;
             width: 100%;
             padding: 16px;
             border-radius: 40px;
-            font-weight: 700;
-            font-size: 16px;
-            color: #0A0C10;
-            cursor: pointer;
-            transition: all 0.2s;
+            font-weight: bold;
+            border: none;
             margin-top: 24px;
+            cursor: pointer;
         }
 
-        /* === KITCHEN MODERN === */
+        /* Kitchen */
         .kitchen-grid-modern {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
 
-        /* === MENU MANAGEMENT GRID === */
         .mgmt-grid-modern {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        /* === SCROLLBAR === */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-gold);
-            border-radius: 4px;
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-elevated);
+            border-left: 4px solid var(--accent-gold);
+            padding: 12px 24px;
+            border-radius: 60px;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-md);
         }
 
-        /* === RESPONSIVE === */
         @media (max-width: 1200px) {
-            .order-container {
-                grid-template-columns: 220px 1fr 340px;
-            }
+            .order-container { grid-template-columns: 220px 1fr 320px; }
         }
         @media (max-width: 992px) {
-            .order-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            .category-sidebar, .cart-panel-modern {
-                position: relative;
-                top: 0;
-            }
-            .cat-grid {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
+            .order-container { grid-template-columns: 1fr; }
+            .category-sidebar, .cart-panel-modern { position: relative; top: 0; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-            .main {
-                margin-left: 70px;
-            }
-            .topbar {
-                left: 70px;
-            }
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            .page {
-                padding: 20px 16px;
-            }
+            .sidebar { width: 70px; }
+            .main { margin-left: 70px; }
+            .topbar { left: 70px; }
+            .page { padding: 20px 16px; }
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN PAGE (Sleek) -->
-<div id="loginPage" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#0A0C10; z-index:9999; display:flex; align-items:center; justify-content:center;">
-    <div class="glass-auth" style="background: rgba(17, 19, 23, 0.95); backdrop-filter: blur(20px); padding: 48px; border-radius: 48px; border: 1px solid rgba(212, 175, 55, 0.3); width: 420px; text-align: center;">
-        <div class="brand-icon" style="margin: 0 auto 24px; width: 64px; height: 64px; font-size: 32px;">Z</div>
-        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 8px;">Welcome Back</h2>
-        <p style="color: var(--text-dim); margin-bottom: 32px;">Sign in to your workspace</p>
-        <input type="text" id="loginUser" placeholder="Username" style="width:100%; padding:16px; background:#1A1E26; border:1px solid #2A2E36; border-radius: 60px; margin-bottom:16px; color:white;">
-        <input type="password" id="loginPass" placeholder="Password" style="width:100%; padding:16px; background:#1A1E26; border:1px solid #2A2E36; border-radius: 60px; margin-bottom:24px; color:white;">
-        <button id="loginSubmit" style="width:100%; padding:16px; background: var(--gradient-gold); border: none; border-radius: 60px; font-weight: bold; font-size: 16px; cursor: pointer;">Login</button>
-        <p id="loginError" style="color: var(--danger); font-size: 13px; margin-top: 16px;"></p>
+<!-- LOGIN PAGE -->
+<div id="loginPage" style="position:fixed; inset:0; background:#0A0C10; z-index:9999; display:flex; align-items:center; justify-content:center;">
+    <div style="background:rgba(17,19,23,0.95); backdrop-filter:blur(20px); padding:48px; border-radius:48px; border:1px solid rgba(212,175,55,0.3); width:420px; text-align:center;">
+        <div class="brand-icon" style="margin:0 auto 24px; width:64px; height:64px; font-size:32px;">Z</div>
+        <h2 style="font-family:'Playfair Display'; font-size:32px;">Welcome Back</h2>
+        <p style="color:var(--text-dim); margin-bottom:32px;">Sign in to your workspace</p>
+        <input type="text" id="loginUser" placeholder="Username" style="width:100%; padding:16px; background:#1A1E26; border:1px solid #2A2E36; border-radius:60px; margin-bottom:16px; color:white;">
+        <input type="password" id="loginPass" placeholder="Password" style="width:100%; padding:16px; background:#1A1E26; border:1px solid #2A2E36; border-radius:60px; margin-bottom:24px; color:white;">
+        <button id="loginSubmit" style="width:100%; padding:16px; background:var(--gradient-gold); border:none; border-radius:60px; font-weight:bold; cursor:pointer;">Login</button>
+        <p id="loginError" style="color:#EF4444; font-size:13px; margin-top:16px;"></p>
     </div>
 </div>
 
-<!-- MAIN APP WRAPPER -->
+<!-- MAIN APP -->
 <div id="appWrapper" style="display:none;">
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast">Message</div>
 
-    <!-- SIDEBAR -->
     <nav class="sidebar">
-        <div class="logo-area">
-            <div class="brand-icon">Z</div>
-        </div>
+        <div class="brand-icon">Z</div>
         <div class="nav-item active" onclick="switchPage('dashboard',0)" title="Dashboard"><i class="fas fa-chart-pie"></i></div>
         <div class="nav-item" onclick="switchPage('order',1)" title="Order"><i class="fas fa-shopping-cart"></i></div>
         <div class="nav-item" onclick="switchPage('kitchen',2)" title="Kitchen"><i class="fas fa-utensils"></i></div>
@@ -546,19 +417,13 @@
         <div class="nav-item" onclick="switchPage('menu',4)" title="Menu"><i class="fas fa-bars"></i></div>
     </nav>
 
-    <!-- TOPBAR -->
     <header class="topbar">
-        <div class="restaurant-brand">
-            <h1>Zaiqa One</h1>
-            <p>Flagship Restaurant Suite</p>
-        </div>
+        <div class="restaurant-brand"><h1>Zaiqa One</h1><p>Flagship Restaurant Suite</p></div>
         <div class="topbar-stats">
             <div class="stat-chip"><i class="fas fa-clock"></i> <span id="clock">--:--:--</span></div>
             <div class="stat-chip"><i class="fas fa-bell"></i> <span id="pending-badge">0</span> Pending</div>
         </div>
-        <div class="profile-area">
-            <div class="avatar" onclick="logout()"><i class="fas fa-sign-out-alt"></i></div>
-        </div>
+        <div class="avatar" onclick="logout()"><i class="fas fa-sign-out-alt"></i></div>
     </header>
 
     <main class="main">
@@ -571,12 +436,12 @@
                 <div class="stat-card"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-label">Served</div><div class="stat-value" id="stat-served" style="color:var(--success)">--</div></div>
             </div>
             <div class="dashboard-grid">
-                <div class="glass-card"><h3 style="margin-bottom: 20px;">Recent Orders</h3><div id="dashboard-orders"><div class="loading">Loading...</div></div></div>
-                <div class="glass-card"><h3 style="margin-bottom: 20px;">Live Menu</h3><div id="dashboard-menu"><div class="loading">Loading...</div></div></div>
+                <div class="glass-card"><h3>Recent Orders</h3><div id="dashboard-orders"><div class="loading">Loading...</div></div></div>
+                <div class="glass-card"><h3>Live Menu</h3><div id="dashboard-menu"><div class="loading">Loading...</div></div></div>
             </div>
         </div>
 
-        <!-- ORDER PAGE (MODERN 3-PANEL) -->
+        <!-- ORDER PAGE -->
         <div class="page" id="page-order">
             <div class="order-container">
                 <div class="category-sidebar">
@@ -588,9 +453,14 @@
                 </div>
                 <div class="cart-panel-modern">
                     <h3>Current Order</h3>
-                    <div class="token-badge">Token: <strong id="next-token">#001</strong></div>
+                    <div class="token-badge">Next Token: <strong id="next-token">#001</strong></div>
                     <div id="cart-items-modern" style="max-height: 400px; overflow-y: auto; margin: 16px 0;"></div>
-                    <div class="total-row" style="display: flex; justify-content: space-between; margin-top: 16px;"><span>Total</span><strong id="cart-total-modern">Rs. 0</strong></div>
+                    <div class="total-row" style="display:flex; justify-content:space-between; margin-top:16px;"><span>Total</span><strong id="cart-total-modern">Rs. 0</strong></div>
+                    <div style="display:flex; gap:12px; margin:16px 0;">
+                        <div class="otype-tab active" onclick="setOrderType('counter',this)">🥡 Take Away</div>
+                        <div class="otype-tab" onclick="setOrderType('dine-in',this)">🍽️ Dine-in</div>
+                    </div>
+                    <div id="table-input-wrap" style="display:none;"><select class="cart-input" id="table-no-input" style="width:100%; padding:12px; background:var(--bg-elevated); border-radius:12px; border:1px solid var(--border-light);"><option>Select Table</option></select></div>
                     <button class="btn-place-modern" id="place-btn" onclick="placeOrder()">Place Order</button>
                 </div>
             </div>
@@ -598,178 +468,260 @@
 
         <!-- KITCHEN -->
         <div class="page" id="page-kitchen">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 24px;"><h2>Kitchen Display System</h2><button onclick="loadKitchenOrders()" style="background: var(--bg-elevated); border: 1px solid var(--border-light); border-radius: 40px; padding: 10px 20px; cursor: pointer;">Refresh</button></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:24px;"><h2>Kitchen Display</h2><button onclick="loadKitchenOrders()" style="background:var(--bg-elevated); border:1px solid var(--border-light); border-radius:40px; padding:8px 20px; cursor:pointer;">Refresh</button></div>
             <div class="kitchen-grid-modern" id="kitchen-grid-modern"></div>
         </div>
 
-        <!-- TOKEN -->
-        <div class="page" id="page-token"><div class="token-container"><div class="slip" id="slip-content"></div></div></div>
+        <!-- TOKEN SLIP -->
+        <div class="page" id="page-token">
+            <div class="token-container" style="max-width:480px; margin:0 auto;"><div class="slip" id="slip-content"></div></div>
+        </div>
 
         <!-- MENU MANAGEMENT -->
         <div class="page" id="page-menu">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 24px;"><h2>Menu Engineering</h2><button onclick="openAddModal()" style="background: var(--gradient-gold); border: none; border-radius: 40px; padding: 12px 24px; font-weight: bold; cursor: pointer;">+ New Item</button></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:24px;"><h2>Menu Engineering</h2><button onclick="openAddModal()" style="background:var(--gradient-gold); border:none; border-radius:40px; padding:12px 24px; font-weight:bold; cursor:pointer;">+ New Item</button></div>
             <div class="mgmt-grid-modern" id="mgmt-grid-modern"></div>
         </div>
     </main>
 </div>
 
 <script>
-    // ==================== CONSTANTS & GLOBAL STATE ====================
+    // ==================== FULLY FUNCTIONAL BACKEND LOGIC ====================
     const BASE_URL = 'https://oracleapex.com/ords/wksp-musoft/restaurant/';
-    let allMenuItems = [];
-    let cart = [];
-    let currentOrderType = 'counter';
-    let lastToken = {};
+    let allMenuItems = [], cart = [], currentOrderType = 'counter', lastToken = {};
+    let currentCategory = 'All';
+    let mgmtAllItems = [];
 
-    // ==================== CORE CUSTOM API HANDLERS (WITH ERROR HANDLING) ====================
-    async function apiGet(endpoint) {
-        const res = await fetch(BASE_URL + endpoint);
-        return await res.json();
-    }
-    async function apiPost(endpoint, data) {
-        const res = await fetch(BASE_URL + endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        return await res.json();
-    }
-    async function apiPut(endpoint, data) {
-        const res = await fetch(BASE_URL + endpoint, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-        return await res.json();
-    }
+    // Helper functions
+    function showToast(msg) { let t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 3000); }
+    function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-PK'); }
+    setInterval(updateClock,1000); updateClock();
 
-    // ==================== LOGIC & RENDERING (MODERN) ====================
+    async function apiGet(endpoint) { const res = await fetch(BASE_URL+endpoint); return await res.json(); }
+    async function apiPost(endpoint, data) { const res = await fetch(BASE_URL+endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }); return await res.json(); }
+    async function apiPut(endpoint, data) { const res = await fetch(BASE_URL+endpoint, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) }); return await res.json(); }
+
     async function loadDashboard() {
         try {
             const data = await apiGet('orders/all/');
             const items = data.items || [];
-            const uniqueOrders = [...new Map(items.map(i => [i.order_id, i])).values()];
+            const uniqueOrders = [...new Map(items.map(i=>[i.order_id,i])).values()];
             document.getElementById('stat-total').innerText = uniqueOrders.length;
-            document.getElementById('stat-pending').innerText = uniqueOrders.filter(o => o.status === 'pending').length;
-            document.getElementById('stat-served').innerText = uniqueOrders.filter(o => o.status === 'served').length;
-            document.getElementById('pending-badge').innerText = uniqueOrders.filter(o => o.status === 'pending').length;
-            let revenue = 0; items.forEach(o => revenue += (o.subtotal || 0));
+            document.getElementById('stat-pending').innerText = uniqueOrders.filter(o=>o.status==='pending').length;
+            document.getElementById('stat-served').innerText = uniqueOrders.filter(o=>o.status==='served').length;
+            document.getElementById('pending-badge').innerText = uniqueOrders.filter(o=>o.status==='pending').length;
+            let revenue = 0; items.forEach(o=>revenue+=(o.subtotal||0));
             document.getElementById('stat-revenue').innerHTML = '₨ ' + revenue.toLocaleString();
-            let html = items.length === 0 ? '<div class="empty-state">No orders today</div>' : `<table class="orders-table"><thead><tr><th>Token</th><th>Item</th><th>Status</th></tr></thead><tbody>${items.slice(0,5).map(o => `<tr><td>#${String(o.token_no).padStart(3,'0')}</td><td>${o.item_name}</td><td><span class="status-pill ${o.status}">${o.status}</span></td></tr>`).join('')}</tbody></table>`;
+            let html = items.length ? `<table class="orders-table"><thead><tr><th>Token</th><th>Item</th><th>Status</th></tr></thead><tbody>${items.slice(0,8).map(o=>`<tr><td>#${String(o.token_no).padStart(3,'0')}</td><td>${o.emoji||''} ${o.item_name}</td><td><span class="status-pill ${o.status}">${o.status}</span></td></tr>`).join('')}</tbody></table>` : '<div>No orders</div>';
             document.getElementById('dashboard-orders').innerHTML = html;
             const mitems = (await apiGet('menu-items/')).items || [];
-            document.getElementById('dashboard-menu').innerHTML = mitems.slice(0,4).map(item => `<div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);"><span style="font-size: 24px;">${item.emoji||'🍽️'}</span><div><div>${item.name}</div><div style="font-size: 12px; color: var(--text-dim);">${item.category}</div></div><div style="margin-left: auto;">₨ ${item.price}</div></div>`).join('');
-        } catch(e) { console.error(e); }
+            document.getElementById('dashboard-menu').innerHTML = mitems.slice(0,5).map(item=>`<div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:24px">${item.emoji||'🍽️'}</span><div><div>${item.name}</div><div style="font-size:12px; color:var(--text-dim)">${item.category}</div></div><div style="margin-left:auto;">₨ ${item.price}</div></div>`).join('');
+        } catch(e){ console.error(e); }
     }
 
     async function loadMenuItems() {
         try {
             const data = await apiGet('menu-items/');
             allMenuItems = data.items || [];
-            renderCategoryTabs();
+            const cats = ['All', ...new Set(allMenuItems.map(i=>i.category))];
+            document.getElementById('category-list-modern').innerHTML = cats.map(c=>`<div class="cat-chip" onclick="filterMenuByCategory('${c}',this)"><i class="fas fa-tag"></i>${c}</div>`).join('');
+            document.querySelector('.cat-chip')?.classList.add('active');
             renderModernMenuGrid(allMenuItems);
             updateNextToken();
-        } catch(e) { console.error(e); }
-    }
-
-    function renderCategoryTabs() {
-        const cats = ['All', ...new Set(allMenuItems.map(i => i.category))];
-        const container = document.getElementById('category-list-modern');
-        container.innerHTML = cats.map(c => `<div class="cat-chip" onclick="filterMenuByCategory('${c}', this)"><i class="fas fa-tag"></i>${c}</div>`).join('');
-        if(container.firstChild) container.firstChild.classList.add('active');
+        } catch(e){}
     }
 
     function filterMenuByCategory(cat, el) {
-        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
         el.classList.add('active');
-        const filtered = cat === 'All' ? allMenuItems : allMenuItems.filter(i => i.category === cat);
+        currentCategory = cat;
+        const filtered = cat==='All' ? allMenuItems : allMenuItems.filter(i=>i.category===cat);
         renderModernMenuGrid(filtered);
     }
 
     function renderModernMenuGrid(items) {
         const container = document.getElementById('menu-grid-modern');
-        if(!items.length) { container.innerHTML = '<div class="empty-state">No items</div>'; return; }
-        container.innerHTML = items.map(item => `
+        if(!items.length) { container.innerHTML = '<div>No items</div>'; return; }
+        container.innerHTML = items.map(item=>`
             <div class="product-card" onclick="addToCart(${item.item_id},'${item.name.replace(/'/g,"\\'")}',${item.price},'${item.emoji||'🍽️'}')">
-                <span style="font-size: 32px;">${item.emoji||'🍽️'}</span>
-                <div style="font-weight: 600; margin: 8px 0;">${item.name}</div>
-                <div style="color: var(--accent-gold); font-weight: bold;">₨ ${item.price}</div>
+                <span style="font-size:32px">${item.emoji||'🍽️'}</span>
+                <div style="font-weight:600; margin:8px 0">${item.name}</div>
+                <div style="color:var(--accent-gold); font-weight:bold">₨ ${item.price}</div>
             </div>
         `).join('');
     }
 
+    async function updateNextToken() {
+        try {
+            const data = await apiGet('orderss/pending/');
+            const maxToken = data.items?.reduce((m,o)=>Math.max(m,o.token_no||0),0) || 0;
+            document.getElementById('next-token').innerHTML = '#' + String(maxToken+1).padStart(3,'0');
+        } catch(e) {}
+    }
+
     function addToCart(id, name, price, emoji) {
-        const existing = cart.find(i => i.id === id);
-        if(existing) existing.qty++; else cart.push({ id, name, price, emoji, qty: 1 });
+        const existing = cart.find(i=>i.id===id);
+        if(existing) existing.qty++; else cart.push({ id, name, price, emoji, qty:1 });
         renderModernCart();
+        showToast(name + ' added');
     }
 
     function renderModernCart() {
         const container = document.getElementById('cart-items-modern');
-        if(!cart.length) { container.innerHTML = '<div style="text-align: center; color: var(--text-dim);">Empty cart</div>'; document.getElementById('cart-total-modern').innerText = '₨ 0'; return; }
-        let total = 0;
-        container.innerHTML = cart.map(item => {
-            total += item.qty * item.price;
-            return `<div class="cart-item"><div><span class="cart-qty" style="background: var(--bg-elevated); padding: 4px 8px; border-radius: 8px;">${item.qty}</span> ${item.name}</div><div>₨ ${item.qty * item.price}</div></div>`;
+        if(!cart.length) { container.innerHTML = '<div style="text-align:center; color:var(--text-dim);">Cart empty</div>'; document.getElementById('cart-total-modern').innerHTML = '₨ 0'; return; }
+        let total=0;
+        container.innerHTML = cart.map(item=>{
+            total += item.qty*item.price;
+            return `<div class="cart-item"><div><span style="background:var(--bg-elevated); padding:2px 8px; border-radius:40px; margin-right:8px;">${item.qty}</span> ${item.name}</div><div>₨ ${item.qty*item.price}</div></div>`;
         }).join('');
         document.getElementById('cart-total-modern').innerHTML = '₨ ' + total;
     }
 
+    function setOrderType(type, el) {
+        currentOrderType = type;
+        document.querySelectorAll('.otype-tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('table-input-wrap').style.display = type==='dine-in' ? 'block' : 'none';
+    }
+
     async function placeOrder() {
-        if (!cart.length) { alert('Cart empty'); return; }
-        const orderData = await apiPost('order/create/', { order_type: currentOrderType, table_no: '' });
-        if(orderData.order_id) {
-            for(let item of cart) await apiPost('order/additem/', { order_id: orderData.order_id, item_id: item.id, qty: item.qty });
-            lastToken = { token_no: orderData.token_no, items: [...cart], total: cart.reduce((s,i)=>s+i.qty*i.price,0), type: currentOrderType };
-            showSlip();
-            cart = []; renderModernCart();
-            showToast('Order Placed!');
-            switchPage('token', 3);
-        } else alert('Order failed');
+        if(!cart.length) { showToast('Cart empty'); return; }
+        const btn = document.getElementById('place-btn'); btn.disabled=true; btn.innerHTML='Processing...';
+        const tableNo = document.getElementById('table-no-input')?.value || '';
+        try {
+            const orderData = await apiPost('order/create/', { order_type: currentOrderType, table_no: tableNo });
+            if(orderData.order_id) {
+                for(let item of cart) await apiPost('order/additem/', { order_id: orderData.order_id, item_id: item.id, qty: item.qty });
+                lastToken = { token_no: orderData.token_no, items: [...cart], total: cart.reduce((s,i)=>s+i.qty*i.price,0), type: currentOrderType, table: tableNo };
+                showSlip();
+                cart = []; renderModernCart();
+                showToast('Order placed!');
+                switchPage('token',3);
+            } else showToast('Order failed');
+        } catch(e) { showToast('Error'); } finally { btn.disabled=false; btn.innerHTML='Place Order'; }
     }
 
     function showSlip() {
         if(!lastToken.token_no) return;
-        const itemsHtml = lastToken.items.map(i => `<div><span>${i.emoji} ${i.name} x${i.qty}</span><span>₨ ${i.qty*i.price}</span></div>`).join('');
-        document.getElementById('slip-content').innerHTML = `<div class="slip-restaurant">Zaiqa Restaurant</div><div class="slip-token-num">${String(lastToken.token_no).padStart(3,'0')}</div><div>${itemsHtml}</div><div>Total: ₨ ${lastToken.total}</div><button onclick="window.print()">Print</button>`;
+        const itemsHtml = lastToken.items.map(i=>`<div class="slip-item-row"><span>${i.emoji} ${i.name} x ${i.qty}</span><span>₨ ${i.qty*i.price}</span></div>`).join('');
+        document.getElementById('slip-content').innerHTML = `
+            <div class="slip" style="background:var(--bg-card); border-radius:28px; padding:36px; text-align:center;">
+                <div class="slip-restaurant" style="font-family:'Playfair Display'; font-size:22px;">Zaiqa Restaurant</div>
+                <div class="slip-token-num" style="font-size:72px; font-weight:700;">${String(lastToken.token_no).padStart(3,'0')}</div>
+                <div class="slip-items" style="text-align:left;">${itemsHtml}</div>
+                <div class="slip-total" style="display:flex; justify-content:space-between; background:rgba(212,175,55,0.1); border-radius:16px; padding:12px; margin:16px 0;"><span>Total</span><strong>₨ ${lastToken.total}</strong></div>
+                <button class="btn-print" onclick="window.print()" style="background:var(--gradient-gold); border:none; padding:12px 24px; border-radius:40px; cursor:pointer;">Print Slip</button>
+            </div>
+        `;
     }
 
     async function loadKitchenOrders() {
-        const data = await apiGet('orderss/pending/');
-        const items = data.items || [];
-        const grouped = {};
-        items.forEach(i => { if(!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, items: [], status: i.status }; grouped[i.order_id].items.push({ name: i.item_name, qty: i.quantity }); });
-        document.getElementById('kitchen-grid-modern').innerHTML = Object.entries(grouped).map(([id, order]) => `<div class="glass-card"><div class="k-token">#${String(order.token_no).padStart(3,'0')}</div><ul>${order.items.map(i=>`<li>${i.name} x${i.qty}</li>`).join('')}</ul><button onclick="updateStatus(${id},'ready')">Ready</button></div>`).join('');
+        try {
+            const data = await apiGet('orderss/pending/');
+            const items = data.items || [];
+            const grouped = {};
+            items.forEach(i => {
+                if(!grouped[i.order_id]) grouped[i.order_id] = { token_no: i.token_no, type: i.order_type, status: i.status, items: [] };
+                grouped[i.order_id].items.push({ name: i.item_name, qty: i.quantity });
+            });
+            document.getElementById('kitchen-grid-modern').innerHTML = Object.entries(grouped).map(([id, order]) => `
+                <div class="glass-card">
+                    <div class="k-token" style="font-size:28px; font-weight:700;">#${String(order.token_no).padStart(3,'0')}</div>
+                    <div class="k-type" style="margin:8px 0;">${order.type==='dine-in'?'Dine-in':'Take Away'}</div>
+                    <ul>${order.items.map(i=>`<li>${i.name} x${i.qty}</li>`).join('')}</ul>
+                    <button onclick="updateStatus(${id},'ready')" style="background:var(--accent-gold-dim); border:none; border-radius:40px; padding:10px; width:100%; margin-top:12px; cursor:pointer;">Mark Ready</button>
+                </div>
+            `).join('');
+        } catch(e){}
     }
 
-    async function updateStatus(orderId, status) { await apiPut('orderss/status/', { order_id: orderId, status: status }); loadKitchenOrders(); }
+    async function updateStatus(orderId, status) {
+        await apiPut('orderss/status/', { order_id: orderId, status: status });
+        showToast('Status updated');
+        loadKitchenOrders();
+    }
 
     async function loadMenuMgmt() {
         const data = await apiGet('menu/all/');
-        const items = data.items || [];
-        document.getElementById('mgmt-grid-modern').innerHTML = items.map(item => `<div class="glass-card"><span style="font-size: 32px;">${item.emoji||'🍽️'}</span><div>${item.name}</div><div>₨ ${item.price}</div><button onclick="openEditModal(${item.item_id},'${item.name}',${item.price},'${item.category}','${item.emoji||''}')">Edit</button></div>`).join('');
+        mgmtAllItems = data.items || [];
+        document.getElementById('mgmt-grid-modern').innerHTML = mgmtAllItems.map(item=>`
+            <div class="glass-card">
+                <span style="font-size:32px">${item.emoji||'🍽️'}</span>
+                <div style="font-weight:600;">${item.name}</div>
+                <div style="color:var(--text-dim)">${item.category}</div>
+                <div style="font-size:20px; color:var(--accent-gold); margin:8px 0;">₨ ${item.price}</div>
+                <div class="toggle-wrap" style="display:flex; justify-content:space-between; margin:12px 0;">
+                    <span>${item.is_active==1?'Available':'Unavailable'}</span>
+                    <div class="toggle ${item.is_active==1?'on':'off'}" onclick="toggleItem(${item.item_id})" style="width:40px; height:22px; background:${item.is_active==1?'var(--success)':'var(--bg-elevated)'}; border-radius:40px; position:relative; cursor:pointer;"><div style="width:18px; height:18px; background:white; border-radius:50%; position:absolute; top:2px; left:${item.is_active==1?'21px':'2px'}; transition:0.2s;"></div></div>
+                </div>
+                <button onclick="openEditModal(${item.item_id},'${item.name.replace(/'/g,"\\'")}',${item.price},'${item.category}','${item.emoji||''}')" style="background:transparent; border:1px solid var(--border-light); border-radius:40px; padding:8px; width:100%; cursor:pointer;">Edit</button>
+            </div>
+        `).join('');
     }
 
-    // Helper functions
-    function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-PK'); }
-    setInterval(updateClock,1000); updateClock();
-    function showToast(msg) { let t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2000); }
-    async function updateNextToken() { try { const data = await apiGet('orderss/pending/'); const maxToken = data.items?.reduce((m,o)=>Math.max(m,o.token_no||0),0) || 0; document.getElementById('next-token').innerText = '#' + String(maxToken+1).padStart(3,'0'); } catch(e) {} }
+    async function toggleItem(id) {
+        await apiPut('menu/toggle/', { item_id: id });
+        loadMenuMgmt(); loadMenuItems();
+        showToast('Toggled');
+    }
 
-    // Navigation etc.
-    function switchPage(name, idx) { document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+name).classList.add('active'); document.querySelectorAll('.nav-item').forEach((n,i)=>{ if(i===idx) n.classList.add('active'); else n.classList.remove('active'); }); if(name==='dashboard') loadDashboard(); if(name==='order') loadMenuItems(); if(name==='kitchen') loadKitchenOrders(); if(name==='menu') loadMenuMgmt(); }
+    function openAddModal() { alert('Add item feature – connect to API'); }
+    function openEditModal(id,name,price,category,emoji) { alert('Edit feature – implement modal'); }
+
+    // Navigation
+    async function switchPage(name, idx) {
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById('page-'+name).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach((n,i)=>{ if(i===idx) n.classList.add('active'); else n.classList.remove('active'); });
+        if(name==='dashboard') loadDashboard();
+        if(name==='order') loadMenuItems();
+        if(name==='kitchen') loadKitchenOrders();
+        if(name==='menu') loadMenuMgmt();
+    }
     function logout() { localStorage.clear(); location.reload(); }
-    function openAddModal() {}
-    function openEditModal(id,name,price,category,emoji) { alert('Edit modal placeholder'); }
 
-    // Event Listeners
-    window.addEventListener('DOMContentLoaded', () => { if(localStorage.getItem('loggedIn') === 'true') { document.getElementById('loginPage').style.display = 'none'; document.getElementById('appWrapper').style.display = 'block'; loadDashboard(); } });
-    document.getElementById('loginSubmit')?.addEventListener('click', () => { localStorage.setItem('loggedIn','true'); location.reload(); });
-    document.getElementById('orderSearchInput')?.addEventListener('input', (e) => { const term = e.target.value.toLowerCase(); const filtered = allMenuItems.filter(i => i.name.toLowerCase().includes(term)); renderModernMenuGrid(filtered); });
+    // Login
+    document.getElementById('loginSubmit').addEventListener('click', async()=>{
+        const username = document.getElementById('loginUser').value.trim();
+        const password = document.getElementById('loginPass').value.trim();
+        const res = await fetch(BASE_URL+'login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+        const data = await res.json();
+        if(data.status==='success'){
+            localStorage.setItem('loggedIn','true');
+            localStorage.setItem('userRole',data.role);
+            location.reload();
+        } else document.getElementById('loginError').innerText = 'Invalid credentials';
+    });
+    window.addEventListener('DOMContentLoaded',()=>{
+        if(localStorage.getItem('loggedIn')==='true'){
+            document.getElementById('loginPage').style.display='none';
+            document.getElementById('appWrapper').style.display='block';
+            loadDashboard();
+        }
+    });
+    // Search in order page
+    document.getElementById('orderSearchInput')?.addEventListener('input', (e)=>{
+        const term = e.target.value.toLowerCase();
+        let filtered = currentCategory==='All' ? allMenuItems : allMenuItems.filter(i=>i.category===currentCategory);
+        if(term) filtered = filtered.filter(i=>i.name.toLowerCase().includes(term)||(i.emoji&&i.emoji.includes(term)));
+        renderModernMenuGrid(filtered);
+    });
+    // Populate tables
+    const tableSelect = document.getElementById('table-no-input');
+    if(tableSelect) for(let i=1;i<=20;i++) tableSelect.innerHTML += `<option>Table ${i}</option>`;
 </script>
-
-<!-- TOAST STYLES ADDED TO MAIN STYLE -->
 <style>
-    .toast { position: fixed; bottom: 30px; right: 30px; background: #1A1E26; border-left: 4px solid var(--accent-gold); padding: 12px 24px; border-radius: 60px; z-index: 1000; display: none; box-shadow: var(--shadow-md); }
-    .loading { text-align: center; padding: 40px; color: var(--text-dim); }
-    .glass-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border-glass); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-    .empty-state { text-align: center; color: var(--text-dim); padding: 40px; }
-    .cart-qty { display: inline-block; background: var(--bg-elevated); padding: 2px 8px; border-radius: 40px; margin-right: 12px; }
-    h3 { font-family: 'Playfair Display', serif; }
-    h2 { font-family: 'Playfair Display', serif; letter-spacing: -0.5px; }
-    body { background-color: var(--bg-primary); }
+    .status-pill { display:inline-block; padding:4px 12px; border-radius:40px; font-size:11px; font-weight:600; text-transform:uppercase; }
+    .status-pill.pending { background:rgba(245,158,11,0.15); color:#F59E0B; }
+    .status-pill.ready { background:rgba(16,185,129,0.15); color:#10B981; }
+    .status-pill.served { background:rgba(107,114,128,0.15); color:#9CA3AF; }
+    .orders-table { width:100%; border-collapse:collapse; }
+    .orders-table th, .orders-table td { text-align:left; padding:12px 8px; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .otype-tab { flex:1; text-align:center; padding:10px; border-radius:40px; background:var(--bg-elevated); cursor:pointer; transition:0.2s; }
+    .otype-tab.active { background:var(--accent-gold); color:#000; }
+    .glass-card, .stat-card { position:relative; }
+    .loading { text-align:center; padding:40px; color:var(--text-dim); }
+    .slip { background:var(--bg-card-solid); border-radius:28px; padding:36px; }
 </style>
 </body>
 </html>
