@@ -502,6 +502,7 @@
                 localStorage.setItem('userRole', data.role);
                 localStorage.setItem('userId', data.user_id);
                 localStorage.setItem('passwordVersion', data.password_version);
+                localStorage.setItem('restaurantId', data.restaurant_id);
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appWrapper').style.display = 'block';
                 showToast(`Welcome ${username} (${data.role})`);
